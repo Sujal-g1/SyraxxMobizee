@@ -30,9 +30,4 @@ Mobizee aims to:
 - Promote sustainable transportation through green rewards  
 - Provide a clean, scalable, and mobile-first user experience  
 
-## 🚀 Getting Started
 
-1. Clone the repository  
-2. Install dependencies  
-   ```bash
-   npm install
