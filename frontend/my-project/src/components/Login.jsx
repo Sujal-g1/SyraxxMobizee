@@ -11,13 +11,7 @@ const Login = ({ setUser }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-// Login.jsx (example)
-// const handleLogin = async () => {
-//   const userData = await loginUser(email, password); // fetch from DB
-//   setUser(userData); // pass this up to App.jsx
-//    console.log("Logged-in user:", data.user);
-
-// };
+const API = import.meta.env.VITE_API_URL;
 
 
   // This function will call your backend API to login
@@ -26,7 +20,7 @@ const Login = ({ setUser }) => {
     setError(""); // Clear previous errors
 
     try {
-          const response = await fetch("http://localhost:5001/api/users/login", {
+          const response = await fetch(`${API}/api/users/login`, {
           method: "POST",
            headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -63,7 +57,7 @@ const handleGoogleLogin = async () => {
     const idToken = await user.getIdToken(); 
 
     // Send only the idToken to the backend
-    const response = await fetch("http://localhost:5001/api/users/google-login", {
+    const response = await fetch(`${API}/api/users/google-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken }), 
@@ -138,8 +132,8 @@ const handleGoogleLogin = async () => {
 
             <button
               type="submit"
-              className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 bg-black text-white transition
-              hover:bg-white hover:text-black transition-transform duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
+            className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 bg-black text-white transition
+              hover:bg-white hover:text-black  duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
               Sign in
             </button>
           </form>

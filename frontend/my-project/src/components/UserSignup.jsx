@@ -2,6 +2,8 @@ import { useState } from "react";
 import firstpage from '../assets/firstpage.png'
 import { Link } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
+
 const UserSignup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +24,7 @@ const UserSignup = () => {
 
 
     try {
-      const response = await fetch("http://localhost:5001/api/users/register", {
+      const response = await fetch(`${API}/api/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,6 +3,9 @@ import { Play } from "lucide-react";
 import cardStand from "../assets/cardStand.png";
 import { getFareByTime, stations } from "./utils/fareCalculator";
 
+
+const API = import.meta.env.VITE_API_URL;
+
 export default function NfcCard({ user, refreshUser }) {
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
@@ -40,7 +43,7 @@ export default function NfcCard({ user, refreshUser }) {
 
     // Deduct fare from wallet
     try {
-      const res = await fetch("http://localhost:5001/api/users/recharge-wallet", {
+      const res = await fetch(`${API}/api/users/recharge-wallet`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,7 +83,7 @@ export default function NfcCard({ user, refreshUser }) {
     };
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/enable-feature", {
+      const res = await fetch(`${API}/api/users/enable-feature`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

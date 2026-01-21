@@ -10,6 +10,9 @@ export default function Wallet({ user, refreshUser }) {
   const [upiId, setUpiId] = useState("");
   const [rechargeAmount, setRechargeAmount] = useState("");
 
+
+const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     if (user) {
       console.log("USER DATA IN WALLET COMPONENT:", user); // ✅ Debugging line
@@ -44,7 +47,7 @@ export default function Wallet({ user, refreshUser }) {
     };
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/create-wallet", {
+      const res = await fetch(`${API}/api/users/create-wallet`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -74,7 +77,7 @@ export default function Wallet({ user, refreshUser }) {
     };
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/recharge-wallet", {
+      const res = await fetch(`${API}/api/users/recharge-wallet`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
