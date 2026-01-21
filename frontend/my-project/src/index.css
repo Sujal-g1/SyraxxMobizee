@@ -1,0 +1,177 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+
+/* ---------------- Animations ---------------- */
+
+/* BounceUp Animation */
+@keyframes bounceUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.05);
+  }
+  80% {
+    transform: translateY(5px) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-bounceUp {
+  animation: bounceUp 1s ease-out forwards;
+}
+
+/* ---------------- Offer Cards & Tricolor Shadow ---------------- */
+
+.offer-card {
+  position: relative;
+  background: white;
+  z-index: 1;
+}
+
+.offer-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem; /* matches Tailwind rounded-2xl */
+  padding: 2px; 
+  background: linear-gradient(90deg, #ff9933, #ffffff, #138808);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: -1;
+}
+
+.offer-card:hover {
+  border-color: transparent; /* removes default gray border */
+}
+
+.offer-card:hover::before {
+  opacity: 1; /* show tricolor border */
+}
+
+.tricolor-shadow {
+  position: relative;
+  border: 2px solid transparent; /* Default border space */
+  border-radius: 1rem; /* Match Tailwind rounded-2xl */
+  z-index: 0;
+}
+
+.tricolor-shadow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #ff9933, #ffffff, #138808);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: -1;
+}
+
+.tricolor-shadow:hover::before {
+  opacity: 1;
+}
+
+.tricolor-shadow:hover {
+  border-color: transparent; /* Remove default gray border on hover */
+}
+
+/* --------------- map css ------------ */
+
+
+
+/* Ensure map always has a height */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100vh;
+  width: 100%;
+}
+
+/* Search box + suggestions */
+.search-container {
+  padding: 6px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  width: 280px;
+}
+
+.search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+}
+
+.suggestions {
+  margin: 6px 0 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 220px;
+  overflow-y: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  background: white;
+}
+
+.suggestion-item {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f1f1f1;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.suggestion-item:hover {
+  background: #f6f6f6;
+}
+
+/* Clear button (×) */
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 9px;
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+  user-select: none;
+}
+
+.clear-btn:hover {
+  color: #333;
+}
+
+/* Locate button */
+.locate-btn {
+  background: white;
+  border: none;
+  font-size: 18px;
+  line-height: 22px;
+  padding: 4px 6px;
+}
+.locate-btn:hover {
+  background: #f0f0f0;
+}
+
