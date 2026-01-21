@@ -8,14 +8,13 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  // origin: true, 
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: true,   // reflect the request origin automatically
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.use(express.json());
+// app.use(express.json());
 
 // Logger
 app.use((req, res, next) => {

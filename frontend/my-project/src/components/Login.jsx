@@ -12,6 +12,8 @@ const Login = ({ setUser }) => {
   const navigate = useNavigate();
 
 const API = import.meta.env.VITE_API_URL;
+// console.log("API BASE URL =", API);
+
 
 
   // This function will call your backend API to login
