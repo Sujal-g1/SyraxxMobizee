@@ -94,9 +94,12 @@ const handleGoogleLogin = async () => {
 
         <div className="w-full md:w-1/2 p-10">
           <h2 className="text-3xl font-bold mb-6 flex justify-center text-gray-800">Welcome</h2>
-          <p className="text-gray-500 mb-6">Enter your email and password to access your account</p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+         
+
+          <p className="text-gray-500 mb-6">Enter your email and password to access your account</p>
+  
+          {/* <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-lg mb-2 font-bold text-gray-600">Email</label>
               <input
@@ -138,7 +141,7 @@ const handleGoogleLogin = async () => {
               hover:bg-white hover:text-black  duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
               Sign in
             </button>
-          </form>
+          </form> */}
 
           <button
             type="button"
@@ -151,6 +154,8 @@ const handleGoogleLogin = async () => {
               className="w-5 h-5"/>
             Sign in with Google
           </button>
+
+         <p className="mt-5">this model is under construction , right now we are signing with google only for testing</p>
 {/* 
           <p className="text-sm text-gray-500 text-center mt-6">
             Don’t have an account?{" "}
