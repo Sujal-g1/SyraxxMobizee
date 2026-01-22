@@ -20,16 +20,18 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './components/multiLang';
 
 const App = () => {
-  const [user, setUser] = useState(null); // store logged-in user
-
-useEffect(() => {
+ 
+  const [user, setUser] = useState(() => {
   const storedUser = localStorage.getItem("user");
   const token = localStorage.getItem("token");
 
   if (storedUser && token) {
-    setUser(JSON.parse(storedUser));
+    return JSON.parse(storedUser);
   }
-}, []);
+
+  return null;
+});
+
 
 const ProtectedRoute = ({ user, children }) => {
   if (!user) {
