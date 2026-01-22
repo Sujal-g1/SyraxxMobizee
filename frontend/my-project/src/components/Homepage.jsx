@@ -224,9 +224,7 @@ const handleSeeBuses = () => {
   };
   
 
-  const handlePanic = () => {
-  navigate("/panic"); // Assuming "/panic" is the route for PanicButton.jsx
-};
+ 
 
 // wallet
 
@@ -254,9 +252,8 @@ const handleWalletClick = () => {
         {/* Left side - form */}
         <div className="w-full md:w-1/2 space-y-6">
 
-
-               {/* MobMagic Card button - moved above heading */}
-             <div className="flex justify-start md:justify-start">
+       {/* MobMagic Card button - moved above heading */}
+             <div className="hidden md:flex justify-start md:justify-start">
              <button
               onClick={navigateToNfcCard}
               className="bg-gray-900 text-white px-6 py-3 text-xl hover:bg-black
@@ -269,28 +266,21 @@ const handleWalletClick = () => {
                </button>
                </div>  
 
-           {/* <motion.div initial={{width:0}} animate={{width:"250px"}} transition={{ duration:1.5,ease:[0.76, 0, 0.24, 1]}} >
-           <h1 className="text-4xl font-bold">{t("welcome")}</h1>
-          </motion.div> */}
-
-           <div className="overflow-hidden">
+        <div className="overflow-hidden">
       <motion.h1
-        className="text-4xl font-bold"
+        className="text-xl  text-center md:text-left md:text-4xl font-bold"
         initial={{ y: 80 }}
         animate={{ y: 0 }}
         transition={{
-          delay:1,
-          duration: 1.5,
-          ease: [0.16, 1, 0.3, 1], // premium easing
-        }}
-      >
+          delay:0.2,
+          duration:1.5,
+          ease: [0.16, 1, 0.3, 1],}}>
         {t("welcome")}
       </motion.h1>
     </div>
 
-          {/* <h2 className="text-4xl font-bold">Tagline + heading abi processing m hai</h2> */}
 
-          <form className="space-y-4" onSubmit={handleSearch}>
+      <form className="space-y-4" onSubmit={handleSearch}>
 
        {/* Start City */}
 <div className="relative">
@@ -351,25 +341,26 @@ const handleWalletClick = () => {
   
 
  {/* date and route */}
-<div className="flex gap-4 w-full max-w-[400px]">
-  <div className="flex items-center border py-1 px-2 rounded-lg flex-1">
+<div className="flex gap-4 w-full max-w-[600px]">
+
+  <div className="flex items-center border px-4 py-2 md:px-5 md:py-2 rounded-lg flex-1 w-[40%]">
     <Calendar className="mr-2 text-gray-500" />
     <input type="date" className="w-full outline-none" />
   </div>
 
-  <div className="flex items-center py-1 px-2  rounded-lg flex-1">
-    <button className="bg-black text-white px-6 py-3 rounded-lg w-full">
+    <button className="bg-black text-white rounded-lg w-[30%] text-sm md:text-lg">
   {t("see_route")}
-  </button>
-    
-  </div>
-</div>
+  </button> 
 
-  <button
+   <button
   onClick={handleSeeBuses}
-  className="bg-black text-white px-6 py-3 rounded-lg w-full">
+  className="bg-black text-white text-sm md:text-lg rounded-lg w-[30%]">
   {t("see_buses")}
 </button>
+
+</div>
+
+ 
 
 </form>
 

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Play } from "lucide-react";
 import cardStand from "../assets/cardStand.png";
 import { getFareByTime, stations } from "./utils/fareCalculator";
+import Navbar from "./Navbar";
 
 
 const API = import.meta.env.VITE_API_URL;
@@ -104,9 +105,7 @@ export default function NfcCard({ user, refreshUser }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
-      <nav className="relative flex w-full p-2 items-center bg-black text-white">
-        <h1 className="text-4xl font-bold text-center w-full">Mobizee</h1>
-      </nav>
+     <Navbar user={user}/>
 
       {/* Hero Section */}
       <main className="flex flex-col md:flex-row items-center justify-between px-15 py-12 max-w-7xl mx-auto gap-20">

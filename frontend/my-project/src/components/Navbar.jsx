@@ -112,14 +112,16 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
          initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{
-          delay:1,
+          delay:0.2,
           duration: 1.5,
           ease: [0.16, 1, 0.3, 1], 
         }}>
                
     
         <div className="flex items-center md:gap-10 gap-4">
-            <h1 className="text-xl md:text-2xl font-semibold tracking-wide">Mobizee</h1> 
+            <h1 
+            onClick={()=> navigate("/Homepage")}
+            className="text-xl md:text-2xl font-semibold tracking-wide">Mobizee</h1> 
 
          <div className="flex items-center gap-2  ml-7">
         {/* location */}
@@ -209,7 +211,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
 
           {/* MOBILE OVERLAY MENU */}
       <div className={`fixed inset-0 backdrop-blur-xl bg-black/10 z-[100] flex flex-col items-center justify-center gap-8 transition-transform duration-500 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
-        
+
         {/* Close Button Inside Menu */}
         <button onClick={toggleMenu} className="absolute top-6 right-8 text-4xl text-white">
           <RxCross2 />
@@ -223,6 +225,11 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                 </div>
                 <span className="font-semibold">{user ? user.firstName : "Guest"}</span>
             </div>
+
+            {/* mobMagic card */}
+             <button onClick={()=>navigate("/nfcCard")}
+            className="md:hidden  text-white text-md">
+            MobMagic Card</button>
 
             {/* Menu Links */}
             <button onClick={() => { navigate("/wallet"); toggleMenu(); }} className="flex items-center gap-4 hover:text-green-500">

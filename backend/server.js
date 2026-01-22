@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { connectDB } = require("./database");
 const userFeature = require("./routes/userFeature");
+const routeSearch = require("./routes/routeSearch");
 
 const app = express();
 
@@ -26,10 +27,12 @@ app.use((req, res, next) => {
 connectDB();
 
 // Routes
-const Bus = require("./database/models/bus");
+// const Bus = require("./database/models/bus");
 
-// Mount ALL user routes to userFeature.js
+// Mount ALL user routes
 app.use("/api/users", userFeature);
+app.use("/api/routes", routeSearch);
+
 
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));
 

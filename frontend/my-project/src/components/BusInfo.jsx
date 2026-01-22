@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaFilter, FaSearch } from "react-icons/fa";
 import fakeBuses from "./fakeBuses";
+import Navbar from "./Navbar";
 
 export default function BusInfo() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -13,7 +14,8 @@ export default function BusInfo() {
     .filter((bus) => bus.id.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <>
+    <Navbar />    <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-3xl font-bold mb-6 text-center">Bus Status Dashboard</h2>
 
       {/* Filter + Search Controls */}
@@ -171,5 +173,7 @@ export default function BusInfo() {
         }
       `}</style>
     </div>
+    </>
+
   );
 }
