@@ -9,6 +9,8 @@ const User = require("../database/models/user");
 // SECURE Google Login Route
 // ================================
 router.post("/google-login", async (req, res) => {
+   console.log("Headers:", req.headers);
+  console.log("Raw body:", req.body);
   const { idToken } = req.body;
 
   try {
