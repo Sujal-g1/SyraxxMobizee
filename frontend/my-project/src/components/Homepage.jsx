@@ -1,5 +1,5 @@
 // src/App.jsx
-import React ,{ useState ,useEffect } from "react";
+import React ,{ useState ,useEffect , useRef} from "react";
 import { Calendar, Clock, MapPin, User } from "lucide-react";
 import homepage_right from "../assets/homepage_right.jpg";
 import long_route from "../assets/long_route.png";
@@ -12,7 +12,10 @@ import ticket from "../assets/ticket.png"
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";     // for language change
 import Navbar from "./Navbar";
+import gsap from "gsap";
+import { motion } from 'framer-motion'
 
+import HeaderText from "./HeaderText";
 
 
 function Homepage({user}) {
@@ -233,6 +236,8 @@ const handleWalletClick = () => {
     navigate("/wallet");
 };
 
+
+
   return (
     <div >
     {/* Navbar */}
@@ -254,7 +259,7 @@ const handleWalletClick = () => {
              <div className="flex justify-start md:justify-start">
              <button
               onClick={navigateToNfcCard}
-              className="bg-black text-white px-6 py-3 text-xl
+              className="bg-gray-900 text-white px-6 py-3 text-xl hover:bg-black
               rounded-lg w-full md:w-[350px] text-center">
                <span className="  relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full
               after:bg-gradient-to-r after:from-orange-500 after:via-white after:to-green-500
@@ -264,8 +269,24 @@ const handleWalletClick = () => {
                </button>
                </div>  
 
-        <h1 className="text-4xl font-bold">{t("welcome")}</h1>
+           {/* <motion.div initial={{width:0}} animate={{width:"250px"}} transition={{ duration:1.5,ease:[0.76, 0, 0.24, 1]}} >
+           <h1 className="text-4xl font-bold">{t("welcome")}</h1>
+          </motion.div> */}
 
+           <div className="overflow-hidden">
+      <motion.h1
+        className="text-4xl font-bold"
+        initial={{ y: 80 }}
+        animate={{ y: 0 }}
+        transition={{
+          delay:1,
+          duration: 1.5,
+          ease: [0.16, 1, 0.3, 1], // premium easing
+        }}
+      >
+        {t("welcome")}
+      </motion.h1>
+    </div>
 
           {/* <h2 className="text-4xl font-bold">Tagline + heading abi processing m hai</h2> */}
 

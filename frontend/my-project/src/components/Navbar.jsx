@@ -10,6 +10,7 @@ import Wallet from "./Wallet.jsx";
  
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion'
 
 const Navbar = ({user}) => {
 
@@ -107,7 +108,14 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
     {/* Navbar */}
-        <nav className="relative flex w-full px-6 md:px-10 py-4 items-center bg-black text-white justify-between z-50">
+        <motion.nav className="relative flex w-full px-6 md:px-10 py-4 items-center bg-black text-white justify-between z-50"
+         initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{
+          delay:1,
+          duration: 1.5,
+          ease: [0.16, 1, 0.3, 1], 
+        }}>
                
     
         <div className="flex items-center md:gap-10 gap-4">
@@ -197,7 +205,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
           </button>
         </div>
  
-          </nav>
+          </motion.nav>
 
           {/* MOBILE OVERLAY MENU */}
       <div className={`fixed inset-0 backdrop-blur-xl bg-black/10 z-[100] flex flex-col items-center justify-center gap-8 transition-transform duration-500 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
