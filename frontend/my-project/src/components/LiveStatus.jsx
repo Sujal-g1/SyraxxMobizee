@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../index.css";
-
+const API = import.meta.env.VITE_API_URL;
 const LiveStatus = () => {
   const location = useLocation();
   const mapRef = useRef(null);
