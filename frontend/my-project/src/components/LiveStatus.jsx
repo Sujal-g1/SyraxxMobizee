@@ -47,7 +47,7 @@ const LiveStatus = () => {
 
     // --- Fetch route from backend
     const fetchRouteFromBackend = async (from, to) => {
-      const res = await fetch("http://localhost:5001/api/routes/search", {
+      const res = await fetch(`${API}/api/routes/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ from, to }),
