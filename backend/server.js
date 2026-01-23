@@ -7,6 +7,11 @@ const routeSearch = require("./routes/routeSearch");
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(" INCOMING:", req.method, req.url);
+  next();
+});
+
 // Middlewares
 app.use(cors({
   origin: true,   // reflect the request origin automatically
@@ -16,6 +21,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log("GLOBAL HIT:", req.method, req.url);
+  next();
+});
+
 
 // Logger
 app.use((req, res, next) => {
@@ -34,18 +44,11 @@ app.use("/api/users", userFeature);
 app.use("/api/routes", routeSearch);
 
 
+
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));
 
-app.post("/api/bus", async (req, res) => {
-  try {
-    const bus = new Bus(req.body);
-    await bus.save();
-    res.json(bus);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Start Server
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`✅ Server: http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 5001;
+const PORT = 5001;
+app.listen(PORT, () => console.log(` Server: http://localhost:${PORT}`));

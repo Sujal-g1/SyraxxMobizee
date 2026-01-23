@@ -1,7 +1,7 @@
 // src/App.jsx
 import React ,{ useState ,useEffect , useRef} from "react";
 import { Calendar, Clock, MapPin, User } from "lucide-react";
-import homepage_right from "../assets/homepage_right.jpg";
+import homepage_right from "../assets/homepage_right.png";
 import long_route from "../assets/long_route.png";
 import green_points from "../assets/green_points.png"
 import offer1 from "../assets/offer1.png"
@@ -170,15 +170,33 @@ useEffect(() => {
   debouncedEndFetch(endPoint);
 }, [endPoint, debouncedEndFetch]);
 
-// Handle selection
+// // Handle selection
+// const handleSelectStart = (placeName) => {
+//   setStartPoint(placeName);
+//   setShowStartSuggestions(false);
+// };
+// const handleSelectEnd = (placeName) => {
+//   setEndPoint(placeName);
+//   setShowEndSuggestions(false);
+// };
+
+const normalizePlaceName = (displayName) => {
+  // Take only the first part before comma
+  return displayName.split(",")[0].trim();
+};
+
 const handleSelectStart = (placeName) => {
-  setStartPoint(placeName);
+  const clean = normalizePlaceName(placeName);
+  setStartPoint(clean);
   setShowStartSuggestions(false);
 };
+
 const handleSelectEnd = (placeName) => {
-  setEndPoint(placeName);
+  const clean = normalizePlaceName(placeName);
+  setEndPoint(clean);
   setShowEndSuggestions(false);
 };
+
 
 // Handle form submit
 const handleSearch = (e) => {
@@ -213,9 +231,19 @@ const { t, i18n } = useTranslation();
 const [showLangOptions, setShowLangOptions] = useState(false);
 
 // ----------- see buses --------------
+const handleSeeBuses = async () => {
+  if (!startPoint || !endPoint) return;
+  navigate(
+    `/businfo?from=${encodeURIComponent(startPoint)}&to=${encodeURIComponent(endPoint)}`
+  );
+};
 
-const handleSeeBuses = () => {
-  navigate("/businfo"); // navigate to BusInfo page
+// ----------- see route --------------
+const handleSeeRoute = () => {
+  if (!startPoint || !endPoint) return;
+  navigate(
+    `/live?start=${encodeURIComponent(startPoint)}&end=${encodeURIComponent(endPoint)}`
+  );
 };
 
 
@@ -348,9 +376,13 @@ const handleWalletClick = () => {
     <input type="date" className="w-full outline-none" />
   </div>
 
-    <button className="bg-black text-white rounded-lg w-[30%] text-sm md:text-lg">
+<button
+  type="button"
+  onClick={handleSeeRoute}
+  className="bg-black text-white rounded-lg w-[30%] text-sm md:text-lg">
   {t("see_route")}
-  </button> 
+</button>
+
 
    <button
   onClick={handleSeeBuses}
@@ -369,13 +401,21 @@ const handleWalletClick = () => {
 
 
         {/* Right side - illustration */}
-        <div className="w-full md:w-1/2 flex justify-center mt-8 md:mt-0">
+        <motion.div 
+        initial={{y:80}}
+        animate={{y:0}}
+        transition={{
+          duration:1.5,
+          delay:0.2,ease: [0.16, 1, 0.3, 1],
+          
+        }}
+        className="w-full md:w-1/2 flex justify-center mt-8 md:mt-0">
           <img
             src={homepage_right}
             alt="Car Illustration"
             className="w-full max-w-[600px] rounded-2xl"
           />
-        </div>
+        </motion.div>
       </section>
 
 

@@ -11,6 +11,7 @@ import Dashboard from './components/Dashboard';
 import BusInfo from "./components/BusInfo"; 
 import Reserve from "./components/Reserve";
 import PanicButton from "./components/PanicButton";
+import RouteSearch from "./components/RouteSearch";
 import Wallet from "./components/Wallet";
 
 
@@ -55,15 +56,15 @@ const ProtectedRoute = ({ user, children }) => {
       <Homepage user={user} />
     </ProtectedRoute>
   }
-/>
-
-          <Route path='/live' element={<LiveStatus />} />
+/>        <Route path='/live' element={<LiveStatus />} />
           <Route path='/nfcCard' element={<NfcCard user={user} refreshUser={setUser} />} />
           <Route path='/dashboard' element={<Dashboard />} />  
           <Route path="/businfo" element={<BusInfo />} />
          <Route path="/reserve" element={<Reserve />} />
          <Route path="/panic" element={<PanicButton />} />
          <Route path="/wallet" element={<Wallet user={user} refreshUser={setUser} />} />
+         <Route path="/routesearch" element={<RouteSearch />} />
+
         </Routes>
       </I18nextProvider>
     </div>

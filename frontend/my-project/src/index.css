@@ -175,3 +175,12 @@ html, body, #root {
   background: #f0f0f0;
 }
 
+/* Big labels (start & end) */
+.map-label-big {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #000;
+  font-weight: bold;
+}
+
