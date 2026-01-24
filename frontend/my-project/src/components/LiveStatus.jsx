@@ -4,19 +4,24 @@ import { useLocation } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../index.css";
-const API = import.meta.env.VITE_API_URL;
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
 const LiveStatus = () => {
   const location = useLocation();
   const mapRef = useRef(null);
 
   useEffect(() => {
-    // --- Destroy old map if exists (important for React re-renders)
+    let isMounted = true; // guard against async after unmount
+
+    // ---------------------------
+    // 1. Clean map init
+    // ---------------------------
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
     }
 
-    // --- Create map
     const map = L.map("map").setView([28.6139, 77.209], 12);
     mapRef.current = map;
 
@@ -24,7 +29,9 @@ const LiveStatus = () => {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    // --- Green icon for start/end
+    // ---------------------------
+    // 2. Marker icon
+    // ---------------------------
     const greenIcon = L.icon({
       iconUrl:
         "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
@@ -35,57 +42,93 @@ const LiveStatus = () => {
       shadowSize: [41, 41],
     });
 
-    // --- Read query params from URL
+    // ---------------------------
+    // 3. Read URL params
+    // ---------------------------
     const params = new URLSearchParams(location.search);
     const startQuery = params.get("start");
     const endQuery = params.get("end");
 
-    if (!startQuery || !endQuery) {
-      console.warn("Start or End missing in URL");
-      return;
-    }
+    // ---------------------------
+    // A. Always draw full network (light gray)
+    // ---------------------------
+    fetch(`${API}/api/routes/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (!data.routes) return;
 
-    // --- Fetch route from backend
-    const fetchRouteFromBackend = async (from, to) => {
-      const res = await fetch(`${API}/api/routes/search`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to }),
+        data.routes.forEach((route) => {
+          if (!route.stops || route.stops.length < 2) return;
+
+          const latLngs = route.stops.map((s) => [s.lat, s.lng]);
+
+          L.polyline(latLngs, {
+            color: "#ccc",       // light gray
+            weight: 3,
+            opacity: 0.6,
+            interactive: false, // do not interfere with main route
+          }).addTo(map);
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to load full network:", err);
       });
 
-      if (!res.ok) {
-        throw new Error("Backend route search failed");
-      }
+    // ---------------------------
+    // If no start/end, stop here (but network is already drawn)
+    // ---------------------------
+    if (!startQuery || !endQuery) {
+      console.warn("Start or End missing in URL");
+      return () => {
+        isMounted = false;
+        if (mapRef.current) {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      };
+    }
 
-      const data = await res.json();
-      return data;
-    };
-
-    fetchRouteFromBackend(startQuery, endQuery)
+    // ---------------------------
+    // 4. Fetch searched route from backend
+    // ---------------------------
+    fetch(`${API}/api/routes/search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from: startQuery, to: endQuery }),
+    })
+      .then((res) => res.json())
       .then((data) => {
-        // We expect:
-        // data.resolvedFrom, data.resolvedTo, data.stops
+        if (!isMounted) return;
 
-        if (!data.stops || data.stops.length === 0) {
-          console.warn("No route found from backend");
+        console.log("Route response:", data);
+
+        if (!data.path || data.path.length === 0) {
+          console.warn("No path returned from backend");
           return;
         }
 
+        const path = data.path;
         const resolvedFrom = data.resolvedFrom;
         const resolvedTo = data.resolvedTo;
-        const stops = data.stops;
 
-        // --- 1. Create Start marker (BIG label)
+        // ---------------------------
+        // 5. Start marker (big label)
+        // ---------------------------
         const startLatLng = L.latLng(resolvedFrom.lat, resolvedFrom.lng);
+
         L.marker(startLatLng, { icon: greenIcon })
           .addTo(map)
           .bindTooltip(
-            `<b style="font-size:14px">${resolvedFrom.name}</b>`,
+            `<b style="font-size:16px">${resolvedFrom.name}</b>`,
             { permanent: true, direction: "top", offset: [0, -10] }
           );
 
-        // --- 2. Create End marker (BIG label)
+        // ---------------------------
+        // 6. End marker (big label)
+        // ---------------------------
         const endLatLng = L.latLng(resolvedTo.lat, resolvedTo.lng);
+
         L.marker(endLatLng, { icon: greenIcon })
           .addTo(map)
           .bindTooltip(
@@ -93,8 +136,10 @@ const LiveStatus = () => {
             { permanent: true, direction: "top", offset: [0, -10] }
           );
 
-        // --- 3. Draw red route polyline from all stops
-        const routeLatLngs = stops.map((s) => [s.lat, s.lng]);
+        // ---------------------------
+        // 7. Draw polyline from FINAL path (RED, MAIN ROUTE)
+        // ---------------------------
+        const routeLatLngs = path.map((s) => [s.lat, s.lng]);
 
         const polyline = L.polyline(routeLatLngs, {
           color: "red",
@@ -102,9 +147,10 @@ const LiveStatus = () => {
           opacity: 0.9,
         }).addTo(map);
 
-        // --- 4. Add SMALL labels for intermediate stops
-        stops.forEach((stop) => {
-          // Skip start and end (already added big)
+        // ---------------------------
+        // 8. Small labels for intermediate stops
+        // ---------------------------
+        path.forEach((stop) => {
           if (
             stop.name === resolvedFrom.name ||
             stop.name === resolvedTo.name
@@ -117,7 +163,6 @@ const LiveStatus = () => {
           L.circleMarker(latlng, {
             radius: 5,
             color: "#333",
-            // fillColor: "#333",
             fillOpacity: 1,
           })
             .addTo(map)
@@ -127,15 +172,27 @@ const LiveStatus = () => {
             );
         });
 
-        // --- 5. Fit map to full route
+        // ---------------------------
+        // 9. Fit map to route
+        // ---------------------------
         map.fitBounds(polyline.getBounds().pad(0.3));
+
+        // ---------------------------
+        // 10. Optional: Log route type
+        // ---------------------------
+        if (data.type === "interchange") {
+          console.log("Interchange at:", data.interchange);
+        }
       })
       .catch((err) => {
         console.error("Route fetch failed:", err);
       });
 
-    // --- Cleanup on unmount
+    // ---------------------------
+    // Cleanup
+    // ---------------------------
     return () => {
+      isMounted = false;
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
