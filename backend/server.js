@@ -4,6 +4,7 @@ const cors = require("cors");
 const { connectDB } = require("./database");
 const userFeature = require("./routes/userFeature");
 const routeSearch = require("./routes/routeSearch");
+const routeBuses = require("./routes/routeBuses");
 
 const app = express();
 
@@ -42,7 +43,7 @@ connectDB();
 // Mount ALL user routes
 app.use("/api/users", userFeature);
 app.use("/api/routes", routeSearch);
-
+app.use("/api/routes", routeBuses);
 
 
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));

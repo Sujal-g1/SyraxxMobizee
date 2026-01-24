@@ -15,7 +15,7 @@ import { motion } from 'framer-motion'
 const Navbar = ({user}) => {
 
     const navigate = useNavigate();
-    
+
     // live location code 
 
   const [locationName, setLocationName] = useState("Fetching...");
@@ -108,7 +108,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
     {/* Navbar */}
-        <motion.nav className="relative flex w-full px-6 md:px-10 py-4 items-center bg-black text-white justify-between z-50"
+        <motion.nav className="fixed top-0 left-0 w-full px-6 md:px-10 py-4 flex items-center bg-black text-white justify-between z-50 shadow-lg"
          initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{
@@ -208,6 +208,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
         </div>
  
           </motion.nav>
+
+          {/* ADD THIS SPACER HERE */}
+<div className="h-[72px] md:h-[80px]"></div>
 
           {/* MOBILE OVERLAY MENU */}
       <div className={`fixed inset-0 backdrop-blur-xl bg-black/10 z-[100] flex flex-col items-center justify-center gap-8 transition-transform duration-500 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}>

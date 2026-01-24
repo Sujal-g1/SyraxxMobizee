@@ -132,6 +132,123 @@ router.post("/search", async (req, res) => {
   }
 });
 
+router.post("/buses", async (req, res) => {
+  console.log("HIT /api/routes/buses");
+  console.log("Body:", req.body);
+
+  let { from, to } = req.body;
+
+  if (!from || !to) {
+    return res.status(400).json({ error: "from and to are required" });
+  }
+
+  try {
+    // 1. Resolve FROM and TO (same as /search)
+
+    const fromMatch = await Route.findOne({
+      "stops.name": { $regex: from, $options: "i" }
+    });
+
+    const toMatch = await Route.findOne({
+      "stops.name": { $regex: to, $options: "i" }
+    });
+
+    if (!fromMatch || !toMatch) {
+      return res.json({
+        type: "none",
+        message: "No matching stops found"
+      });
+    }
+
+    const resolvedFromStop = fromMatch.stops.find(s =>
+      s.name.toLowerCase().includes(from.toLowerCase())
+    );
+
+    const resolvedToStop = toMatch.stops.find(s =>
+      s.name.toLowerCase().includes(to.toLowerCase())
+    );
+
+    if (!resolvedFromStop || !resolvedToStop) {
+      return res.json({
+        type: "none",
+        message: "Could not resolve stops properly"
+      });
+    }
+
+    const resolvedFrom = resolvedFromStop.name;
+    const resolvedTo = resolvedToStop.name;
+
+    // 2. Find all routes that contain FROM and TO
+
+    const fromRoutes = await Route.find({
+      "stops.name": resolvedFrom
+    });
+
+    const toRoutes = await Route.find({
+      "stops.name": resolvedTo
+    });
+
+    // 3. Try DIRECT route
+
+    for (const route of fromRoutes) {
+      const hasTo = route.stops.some(s => s.name === resolvedTo);
+
+      if (hasTo) {
+        // DIRECT route found
+
+        return res.json({
+          type: "direct",
+          from: resolvedFrom,
+          to: resolvedTo,
+          buses: route.buses   // 🔥 THIS WAS MISSING IN YOUR CODE
+        });
+      }
+    }
+
+    // 4. Try ONE-INTERCHANGE route
+
+    for (const routeA of fromRoutes) {
+      for (const stop of routeA.stops) {
+        const interchangeName = stop.name;
+
+        for (const routeB of toRoutes) {
+          const hasInterchange = routeB.stops.some(
+            s => s.name === interchangeName
+          );
+
+          if (hasInterchange) {
+            // Found interchange
+
+            return res.json({
+              type: "interchange",
+              from: resolvedFrom,
+              to: resolvedTo,
+              interchange: interchangeName,
+              buses: {
+                firstLeg: routeA.buses,   // from -> interchange
+                secondLeg: routeB.buses   // interchange -> to
+              }
+            });
+          }
+        }
+      }
+    }
+
+    // 5. No route found
+
+    return res.json({
+      type: "none",
+      message: "No direct or one-interchange route found"
+    });
+
+  } catch (err) {
+    console.error("Bus search error:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+
+
 // GET ALL ROUTES FOR NETWORK VIEW
 router.get("/all", async (req, res) => {
   try {

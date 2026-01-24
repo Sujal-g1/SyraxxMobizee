@@ -23,18 +23,6 @@ function Homepage({user}) {
     // const [isScrolled, setIsScrolled] = useState(false); 
   const navigate = useNavigate();
 
-useEffect(() => {
-  const handleScroll = () => {
-    setIsScrolled(window.scrollY > 10);
-  };
-
-  window.addEventListener("scroll", handleScroll);
-
-  // cleanup must be a function
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, []);
 
 const handleClick = (e) =>{
     e.preventDefault();
@@ -233,9 +221,8 @@ const [showLangOptions, setShowLangOptions] = useState(false);
 // ----------- see buses --------------
 const handleSeeBuses = async () => {
   if (!startPoint || !endPoint) return;
-  navigate(
-    `/businfo?from=${encodeURIComponent(startPoint)}&to=${encodeURIComponent(endPoint)}`
-  );
+ navigate(`/businfo?start=${encodeURIComponent(startPoint)}&end=${encodeURIComponent(endPoint)}`);
+
 };
 
 // ----------- see route --------------
