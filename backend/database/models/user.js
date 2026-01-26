@@ -20,7 +20,12 @@ const userSchema = new mongoose.Schema({
   bank_account: { type: String },  // optional
   ifsc: { type: String },          // optional
   upi_id: { type: String },        // optional
+
+  mobmagic_enabled: { type: Boolean, default: false },
+  active_journey_id: { type: mongoose.Schema.Types.ObjectId, ref: "Journey", default: null }
 });
+
+
 
 
 // Generate userId, user_code, wallet_id

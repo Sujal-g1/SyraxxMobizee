@@ -11,6 +11,7 @@ import Wallet from "./Wallet.jsx";
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion'
+import ThemeToggle from "./ThemeToggle.jsx";
 
 const Navbar = ({user}) => {
 
@@ -163,7 +164,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
            {/* right side */}
     
             <div className="hidden lg:flex items-center gap-4">
-    
+            
+             {/* <ThemeToggle /> */}
+            
               {/* panic button */}
               <button  
               onClick={handlePanic}

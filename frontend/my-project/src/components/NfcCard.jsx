@@ -1,164 +1,221 @@
-import React, { useState, useRef } from "react";
-import { Play } from "lucide-react";
-import cardStand from "../assets/cardStand.png";
-import { getFareByTime, stations } from "./utils/fareCalculator";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
 
-
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 export default function NfcCard({ user, refreshUser }) {
+  const [mode, setMode] = useState("BUS");
+  const [sourceStation, setSourceStation] = useState("");
+  const [destinationStation, setDestinationStation] = useState("");
   const [loading, setLoading] = useState(false);
-  const [running, setRunning] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [fare, setFare] = useState(null);
-  const timerRef = useRef(null);
 
-  const handleStart = () => {
-    // Wallet check
-    if (!user?.wallet_id) {
-      alert("❌ Please create a wallet first. Wallet and card are not linked.");
-      return;
-    }
-
-    setRunning(true);
-    setElapsed(0);
-    setFare(null);
-    console.log(`User ${user.user_code} tapped in.`);
-    timerRef.current = setInterval(() => {
-      setElapsed((prev) => prev + 1);
-    }, 1000);
-  };
-
-  const handleStop = async () => {
-    if (!running) return;
-    clearInterval(timerRef.current);
-    setRunning(false);
-
-    const calculatedFare = getFareByTime(elapsed);
-    setFare(calculatedFare);
-
-    console.log(
-      `User ${user.user_code} tapped out. Duration: ${elapsed}s, Fare: Rs ${calculatedFare}`
-    );
-
-    // Deduct fare from wallet
-    try {
-      const res = await fetch(`${API}/api/users/recharge-wallet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          wallet_id: user.wallet_id,
-          amount: -calculatedFare, // deduct fare
-        }),
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-
-      refreshUser(data.user); // update user wallet in parent
-      alert(
-        `Journey ended!\nTime: ${elapsed}s\nFare: Rs ${calculatedFare}\nWallet Balance: ₹${data.wallet_balance}`
-      );
-    } catch (err) {
-      console.error(err);
-      alert("❌ Error updating wallet balance: " + err.message);
-    }
-  };
-
-  const handleQuickEnable = async () => {
-    if (!user || !user._id || !user.email) {
-      alert("User not logged in. Cannot generate card.");
-      return;
-    }
-
-    if (!user.wallet_id) {
-      alert("Please create a wallet first. Wallet and card are co-related.");
+  // -----------------------------
+  // Enable Card
+  // -----------------------------
+  const handleEnableCard = async () => {
+    if (!user?._id || !user?.email) {
+      alert("User not logged in");
       return;
     }
 
     setLoading(true);
-    const payload = {
-      email: user.email,
-      _id: user._id,
-    };
-
     try {
       const res = await fetch(`${API}/api/users/enable-feature`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          _id: user._id,
+          email: user.email,
+        }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      const result = await res.json();
-      console.log("Card generated:", result.user_code);
-      alert("Your MobMagic card has been generated");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to enable card");
+
+      alert("MobMagic Card enabled successfully");
+
+      // 🔥 Refresh user from backend after enabling
+      const token = localStorage.getItem("token");
+      const meRes = await fetch(`${API}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const meData = await meRes.json();
+
+      refreshUser(meData.user);
+      localStorage.setItem("user", JSON.stringify(meData.user));
+
     } catch (err) {
       console.error(err);
-      alert("Error generating card: " + err.message);
+      alert("Error enabling card: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // -----------------------------
+  // Tap In
+  // -----------------------------
+  const handleTapIn = async () => {
+    if (!sourceStation) {
+      alert("Please enter source station");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/users/journey/tap-in`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user._id,
+          mode,
+          source_station: sourceStation,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Tap-in failed");
+
+      alert("Tap-in successful");
+
+      // Refresh user
+      const token = localStorage.getItem("token");
+      const meRes = await fetch(`${API}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const meData = await meRes.json();
+
+      refreshUser(meData.user);
+      localStorage.setItem("user", JSON.stringify(meData.user));
+
+    } catch (err) {
+      console.error(err);
+      alert("Tap-in error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // -----------------------------
+  // Tap Out (Backend not added yet)
+  // -----------------------------
+  const handleTapOut = async () => {
+    if (!destinationStation) {
+      alert("Please enter destination station");
+      return;
+    }
+
+    alert("Tap-out will be implemented next (backend pending)");
+  };
+
+  // -----------------------------
+  // UI
+  // -----------------------------
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-     <Navbar user={user}/>
+      <Navbar user={user} />
 
-      {/* Hero Section */}
-      <main className="flex flex-col md:flex-row items-center justify-between px-15 py-12 max-w-7xl mx-auto gap-20">
-        {/* Left Section */}
-        <div className="max-w-lg space-y-6">
-          <p className="text-black font-semibold uppercase tracking-wide">
-            Best Choice For Your Digital Travel Card
-          </p>
-          <h2 className="text-5xl font-extrabold leading-tight text-black">
-            Get your MobMagic Card Now
+      <div className="flex flex-1 items-center justify-center">
+        <div className="bg-white shadow-lg rounded-xl p-8 max-w-lg w-full space-y-6">
+
+          <h2 className="text-2xl font-bold text-gray-800 text-center">
+            MobMagic Card
           </h2>
-          <p className="text-gray-600">For hassle free commute</p>
 
-          {/* Enable Button */}
-          <button
-            onClick={handleQuickEnable}
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 text-lg font-medium"
-          >
-            {loading ? "Generating..." : "Enable MobMagic Card"}
-          </button>
-
-          {/* Tap In / Tap Out */}
-          <div className="flex flex-col gap-4 mt-6">
-            <button
-              onClick={handleStart}
-              disabled={running}
-              className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 text-lg font-medium"
-            >
-              Start Journey (Tap In)
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!running}
-              className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 text-lg font-medium"
-            >
-              Stop Journey (Tap Out)
-            </button>
-
-            {running && <p>Elapsed Time: {elapsed}s</p>}
-            {fare !== null && <p className="text-xl font-semibold">Fare: Rs {fare}</p>}
+          {/* Card Status */}
+          <div className="bg-gray-50 p-4 rounded-lg border space-y-1">
+            <p>
+              <strong>Card Enabled:</strong>{" "}
+              {user.mobmagic_enabled ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>Active Journey:</strong>{" "}
+              {user.active_journey_id ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>Wallet Balance:</strong> ₹{user.wallet_balance}
+            </p>
           </div>
-        </div>
 
-        {/* Right Section */}
-        <div className="w-full md:w-1/2 flex justify-center mt-8 md:mt-0 border-2 rounded-lg">
-          <img
-            src={cardStand}
-            alt="Card Illustration"
-            className="w-full max-w-[600px] rounded-2xl"
-          />
+          {/* Enable Card */}
+          {!user.mobmagic_enabled && (
+            <button
+              onClick={handleEnableCard}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Enable MobMagic Card
+            </button>
+          )}
+
+          {/* Tap In Section */}
+          {user.mobmagic_enabled && !user.active_journey_id && (
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="text-lg font-semibold">Start Journey (Tap In)</h3>
+
+              <div>
+                <label className="block text-gray-700">Mode</label>
+                <select
+                  value={mode}
+                  onChange={(e) => setMode(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="BUS">Bus</option>
+                  <option value="METRO">Metro</option>
+                  <option value="TRAIN">Train</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-gray-700">Source Station</label>
+                <input
+                  type="text"
+                  placeholder="Enter source station"
+                  value={sourceStation}
+                  onChange={(e) => setSourceStation(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <button
+                onClick={handleTapIn}
+                disabled={loading}
+                className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+              >
+                Tap In
+              </button>
+            </div>
+          )}
+
+          {/* Tap Out Section */}
+          {user.mobmagic_enabled && user.active_journey_id && (
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="text-lg font-semibold">End Journey (Tap Out)</h3>
+
+              <div>
+                <label className="block text-gray-700">Destination Station</label>
+                <input
+                  type="text"
+                  placeholder="Enter destination station"
+                  value={destinationStation}
+                  onChange={(e) => setDestinationStation(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <button
+                onClick={handleTapOut}
+                disabled={loading}
+                className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition"
+              >
+                Tap Out
+              </button>
+            </div>
+          )}
+
         </div>
-      </main>
+      </div>
     </div>
   );
 }

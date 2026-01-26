@@ -33,6 +33,39 @@ const App = () => {
   return null;
 });
 
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch user");
+
+      const data = await res.json();
+
+      // 🔥 Always override old localStorage data
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      console.log("Fresh user loaded from backend:", data.user);
+    } catch (err) {
+      console.error("Failed to refresh user:", err);
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
 
 const ProtectedRoute = ({ user, children }) => {
   if (!user) {
