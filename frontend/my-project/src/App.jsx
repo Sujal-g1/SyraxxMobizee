@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 
 import { Routes, Route , Navigate } from 'react-router-dom'; 
-import Start from './components/Start';
-import Login from './components/Login';
-import UserSignup from './components/UserSignup';
-import Homepage from './components/Homepage';
-import NfcCard from './components/NfcCard';
-import LiveStatus from './components/LiveStatus';
-import Dashboard from './components/Dashboard';  
-import BusInfo from "./components/BusInfo"; 
-import Reserve from "./components/Reserve";
-import PanicButton from "./components/PanicButton";
-import RouteSearch from "./components/RouteSearch";
-import Wallet from "./components/Wallet";
+import Start from './pages/Start';
+import Login from './pages/Login';
+import UserSignup from './pages/UserSignup';
+import Homepage from './pages/Homepage';
+import NfcCard from './pages/NfcCard';
+import LiveStatus from './pages/LiveStatus';
+import Dashboard from './pages/Dashboard';  
+import BusInfo from "./pages/BusInfo"; 
+import Reserve from "./pages/Reserve";
+import PanicButton from "./pages/PanicButton";
+import RouteSearch from "./pages/RouteSearch";
+import Wallet from "./pages/Wallet";
 
 
 import "leaflet/dist/leaflet.css";
 
 import { I18nextProvider } from 'react-i18next';
-import i18n from './components/multiLang';
+import i18n from './pages/multiLang';
 
 const App = () => {
  
@@ -33,10 +33,13 @@ const App = () => {
   return null;
 });
 
+const [loading, setLoading] = useState(true);
+
 
 useEffect(() => {
   const storedUser = localStorage.getItem("user");
   const token = localStorage.getItem("token");
+
 
   if (storedUser && token) {
     setUser(JSON.parse(storedUser));
@@ -73,7 +76,7 @@ const ProtectedRoute = ({ user,  loading, children }) => {
     </ProtectedRoute>
   }
 />        <Route path='/live' element={<LiveStatus />} />
-          <Route path='/nfcCard' element={<NfcCard user={user} refreshUser={setUser} />} />
+          <Route path="/nfcCard" element={<NfcCard user={user} setUser={setUser} />} />
           <Route path='/dashboard' element={<Dashboard />} />  
           <Route path="/businfo" element={<BusInfo />} />
          <Route path="/reserve" element={<Reserve />} />

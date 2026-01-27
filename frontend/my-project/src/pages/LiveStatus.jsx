@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../index.css";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 

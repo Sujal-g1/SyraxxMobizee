@@ -1,7 +1,7 @@
 // src/components/BusInfo.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 

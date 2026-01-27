@@ -6,12 +6,12 @@ import { MdLocationOn } from "react-icons/md";
 import { GrLanguage } from "react-icons/gr";
 import { GoAlertFill } from "react-icons/go";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
-import Wallet from "./Wallet.jsx";
+import Wallet from "../pages/Wallet.jsx";
  
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion'
-import ThemeToggle from "./ThemeToggle.jsx";
+import ThemeToggle from "../pages/ThemeToggle.jsx";
 
 const Navbar = ({user}) => {
 

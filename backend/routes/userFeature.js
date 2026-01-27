@@ -6,6 +6,10 @@ const admin = require("../firebaseAdmin");
 const User = require("../database/models/user");
 const WalletTransaction = require("../database/models/WalletTransaction");
 const Journey = require("../database/models/Journey");
+const Route = require("../database/models/Route");
+const { calculatePathDistance } = require("../utils/distanceCalculator");
+const { calculateFare } = require("../utils/fareCalculator");
+
 
 
 // ================================
@@ -203,51 +207,227 @@ router.post("/wallet-debit", async (req, res) => {
   }
 });
 
-  
+
 router.post("/journey/tap-in", async (req, res) => {
-  const { user_id, mode, source_station } = req.body;
-
   try {
+    const { user_id, mode, source_station } = req.body;
+
+    // 1. Basic validation
     if (!user_id || !mode || !source_station) {
-      return res.status(400).json({ error: "user_id, mode and source_station are required" });
+      return res.status(400).json({
+        error: "user_id, mode and source_station are required"
+      });
     }
 
+    console.log("Tap-in request body:", req.body);
+
+    // 2. Find user by MongoDB _id
     const user = await User.findById(user_id);
-    if (!user) return res.status(404).json({ error: "User not found" });
 
-    // Card must be enabled
-    if (!user.mobmagic_enabled) {
-      return res.status(400).json({ error: "MobMagic card not enabled" });
+    console.log("User found:", !!user);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found"
+      });
     }
 
-    // Prevent double journey
-    if (user.active_journey_id) {
-      return res.status(400).json({ error: "Active journey already in progress" });
-    }
-
-    // Create new Journey
-    const journey = await Journey.create({
+    // 3. Check if user already has an active journey
+    const activeJourney = await Journey.findOne({
       user_id: user._id,
-      mode,                 // BUS / METRO / TRAIN
-      source_station,
-      tap_in_time: new Date(),
       status: "ACTIVE"
     });
 
-    // Lock user into this journey
-    user.active_journey_id = journey._id;
-    await user.save();
+    if (activeJourney) {
+      return res.status(400).json({
+        error: "User already has an active journey"
+      });
+    }
 
+    // 4. Create new journey
+    const journey = await Journey.create({
+      user_id: user._id,
+      mode: mode,
+      source_station: source_station,
+      status: "ACTIVE",
+      tap_in_time: new Date()
+    });
+
+    // 5. Respond
     res.json({
       message: "Tap-in successful",
       journey_id: journey._id,
-      source_station,
-      tap_in_time: journey.tap_in_time
+      source_station: source_station,
+      tap_in_time: journey.started_at
     });
 
   } catch (err) {
     console.error("Tap-in error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: "Server error",
+      details: err.message
+    });
+  }
+});
+
+
+
+
+router.post("/journey/tap-out", async (req, res) => {
+  try {
+    const { journey_id, user_id, destination_station } = req.body;
+
+    if (!journey_id || !user_id || !destination_station) {
+      return res.status(400).json({
+        error: "journey_id, user_id, destination_station are required"
+      });
+    }
+
+    // 1. Load journey
+    const journey = await Journey.findById(journey_id);
+    if (!journey) {
+      return res.status(404).json({ error: "Journey not found" });
+    }
+
+    if (journey.status === "COMPLETED") {
+      return res.status(400).json({ error: "Journey already completed" });
+    }
+
+    const source = journey.source_station;
+    const destination = destination_station;
+
+    // 2. Find a DIRECT route that contains both source and destination
+    const route = await Route.findOne({
+      "stops.name": { $all: [source, destination] }
+    });
+
+    if (!route) {
+      return res.status(400).json({
+        error: "No direct route found between these stations"
+      });
+    }
+
+    // 3. Build path between source and destination
+    const stops = route.stops;
+
+    const sourceIndex = stops.findIndex(s => s.name === source);
+    const destIndex = stops.findIndex(s => s.name === destination);
+
+    if (sourceIndex === -1 || destIndex === -1) {
+      return res.status(400).json({ error: "Stations not found in route" });
+    }
+
+    let pathStops;
+    if (sourceIndex <= destIndex) {
+      pathStops = stops.slice(sourceIndex, destIndex + 1);
+    } else {
+      pathStops = stops.slice(destIndex, sourceIndex + 1).reverse();
+    }
+
+    if (pathStops.length < 2) {
+      return res.status(400).json({ error: "Invalid path between stations" });
+    }
+
+    // 4. Calculate total distance using YOUR utility
+    const distanceKm = calculatePathDistance(pathStops);
+
+    // 5. Calculate fare using YOUR fare rule
+    const fare = calculateFare(distanceKm);
+
+    // 6. Load user and check wallet balance
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.wallet_balance < fare) {
+      return res.status(400).json({ error: "Insufficient wallet balance" });
+    }
+
+    // 7. Debit wallet
+    const newBalance = user.wallet_balance - fare;
+    user.wallet_balance = newBalance;
+    await user.save();
+
+    // 8. Create wallet transaction
+    await WalletTransaction.create({
+      wallet_id: user.wallet_id,
+      type: "FARE_DEBIT",
+      amount: fare,
+      balance_after: newBalance,
+      reference_id: `JOURNEY_${journey_id}`,
+    });
+
+    // 9. Complete journey
+    journey.destination_station = destination;
+    journey.distance_km = distanceKm;
+    journey.fare = fare;
+    journey.status = "COMPLETED";
+    journey.ended_at = new Date();
+
+    await journey.save();
+
+    // 10. Respond to frontend
+    res.json({
+      message: "Journey completed",
+      journey_id: journey._id,
+      source: source,
+      destination: destination,
+      distance_km: distanceKm,
+      fare: fare,
+      wallet_balance: newBalance,
+    });
+
+  } catch (err) {
+    console.error("Tap-out error:", err);
+    res.status(500).json({
+      error: "Server error",
+      details: err.message
+    });
+  }
+});
+
+// Get active journey for a user
+router.get("/journey/active/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const journey = await Journey.findOne({
+      user_id: user_id,
+      status: "ACTIVE"
+    });
+
+    if (!journey) {
+      return res.json({ active: false });
+    }
+
+    res.json({
+      active: true,
+      journey_id: journey._id,
+      source_station: journey.source_station,
+      started_at: journey.started_at
+    });
+
+  } catch (err) {
+    console.error("Get active journey error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// 📜 Get Journey History (COMPLETED journeys)
+router.get("/journey/history/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const journeys = await Journey.find({
+      user_id: user_id,
+      status: "COMPLETED",
+    }).sort({ tap_out_time: -1 });
+
+    res.json({ journeys });
+  } catch (err) {
+    console.error("Get journey history error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -292,7 +472,165 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
+// STEP 1: Initiate UPI Recharge (Create PENDING transaction)
 
+router.post("/wallet/recharge/initiate", async (req, res) => {
+   console.log("BODY RECEIVED:", req.body);
+  try {
+    const { wallet_id, amount } = req.body;
+
+    if (!wallet_id || !amount || amount <= 0) {
+      return res.status(400).json({ error: "Invalid wallet_id or amount" });
+    }
+
+    const user = await User.findOne({ wallet_id });
+    if (!user) {
+      return res.status(404).json({ error: "Wallet not found" });
+    }
+
+    const referenceId = "UPI_" + Date.now();
+
+    const txn = new WalletTransaction({
+      wallet_id: wallet_id,
+      type: "RECHARGE",                     // ✅ valid enum
+      amount: Number(amount),
+      balance_after: user.wallet_balance,  // ✅ required, unchanged for now
+      reference_id: referenceId,
+    });
+console.log("BALANCE USED FOR TXN:", user.wallet_balance);
+    await txn.save();
+
+    res.json({
+      message: "Recharge initiated",
+      reference_id: referenceId,
+    });
+  } catch (err) {
+    console.error("Initiate recharge error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// STEP 2: Confirm UPI Recharge (Credit the wallet)
+
+router.post("/wallet/recharge/confirm", async (req, res) => {
+  try {
+    const { wallet_id, reference_id } = req.body;
+
+    if (!wallet_id || !reference_id) {
+      return res.status(400).json({ error: "wallet_id and reference_id are required" });
+    }
+
+    // 1. Find initiate transaction (ONLY ONCE)
+    const initTxn = await WalletTransaction.findOne({
+      reference_id,
+      type: "RECHARGE"
+    });
+
+    if (!initTxn) {
+      return res.status(404).json({ error: "Initiate transaction not found" });
+    }
+
+    // 🔴 CRITICAL: Check if this recharge is already confirmed
+    const alreadyConfirmed = await WalletTransaction.findOne({
+      reference_id,
+      balance_after: { $gt: initTxn.balance_after }
+    });
+
+    if (alreadyConfirmed) {
+      return res.status(400).json({ error: "This recharge is already confirmed" });
+    }
+
+    const amount = initTxn.amount;
+
+    // 2. Find user
+    const user = await User.findOne({ wallet_id });
+    if (!user) {
+      return res.status(404).json({ error: "Wallet not found" });
+    }
+
+    // 3. Credit wallet
+    const newBalance = user.wallet_balance + amount;
+    user.wallet_balance = newBalance;
+    await user.save();
+
+    // 4. Create confirm transaction
+    const confirmTxn = new WalletTransaction({
+      wallet_id: wallet_id,
+      type: "RECHARGE",
+      amount: amount,
+      balance_after: newBalance,
+      reference_id: reference_id,
+    });
+
+    await confirmTxn.save();
+
+    res.json({
+      message: "Recharge confirmed",
+      wallet_balance: newBalance,
+    });
+
+  } catch (err) {
+    console.error("Confirm recharge error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// STEP 3: Get Wallet Transaction History
+
+router.get("/wallet/transactions", authMiddleware, async (req, res) => {
+  try {
+    // 1. Get user from token
+    const user = await User.findById(req.user.id);
+
+    if (!user || !user.wallet_id) {
+      return res.status(404).json({ error: "Wallet not found for this user" });
+    }
+
+    const walletId = user.wallet_id;
+
+    // 2. Fetch last 50 transactions, newest first
+    const transactions = await WalletTransaction.find({ wallet_id: walletId })
+      .sort({ created_at: -1 })
+      .limit(50);
+
+    res.json({
+      wallet_id: walletId,
+      transactions,
+    });
+
+  } catch (err) {
+    console.error("Fetch transactions error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// 🔥 Get all unique stations (for autocomplete)
+router.get("/stations", async (req, res) => {
+  try {
+    const routes = await Route.find({}, { stops: 1 });
+
+    const stationSet = new Set();
+
+    routes.forEach(route => {
+      route.stops.forEach(stop => {
+        if (stop.name) {
+          stationSet.add(stop.name);
+        }
+      });
+    });
+
+    const stations = Array.from(stationSet).map(name => ({
+      station_name: name
+    }));
+
+    res.json(stations);
+
+  } catch (err) {
+    console.error("Get stations error:", err);
+    res.status(500).json({ error: "Failed to fetch stations" });
+  }
+});
 
 
 module.exports = router;
