@@ -1,16 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const CustomerSupport = () => {
   const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
-
-  const sectionRef = useRef(null);
-  const cardsRef = useRef([]);
 
   const features = [
     { title: "Free Cancellation", key: "Free_Cancel" },
@@ -25,46 +18,9 @@ const CustomerSupport = () => {
 
   const visibleFeatures = showAll ? features : features.slice(0, 4);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-
-      // Whole section fade + lift with scroll
-      gsap.from(sectionRef.current, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "top center",
-          scrub: 1,
-        },
-        opacity: 0,
-        y: 80,
-        ease: "none",
-      });
-
-      // Cards stagger up with scroll
-      gsap.from(cardsRef.current, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "top center",
-          scrub: 1,
-        },
-        opacity: 0,
-        y: 60,
-        stagger: 0.08,
-        ease: "none",
-      });
-
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="w-full py-16 px-4 md:px-8 bg-white"
-    >
+    <section className="w-full py-16 px-4 md:px-8 bg-white">
       {/* Section Title */}
       <h1
         className="text-3xl md:text-5xl flex justify-center font-bold mb-12
@@ -83,7 +39,6 @@ const CustomerSupport = () => {
           {visibleFeatures.map((item, idx) => (
             <div
               key={idx}
-              ref={(el) => (cardsRef.current[idx] = el)}
               className="flex flex-col gap-3 p-6 rounded-2xl
                          bg-gray-50 border border-gray-100
                          hover:shadow-md hover:bg-gray-100
@@ -108,9 +63,9 @@ const CustomerSupport = () => {
           ))}
         </div>
 
-        {/* Load More — MOBILE ONLY */}
+        {/* Load More Button */}
         {features.length > 4 && (
-          <div className="mt-10 flex justify-center md:hidden">
+          <div className="mt-10 flex justify-center">
             <button
               onClick={() => setShowAll((prev) => !prev)}
               className="px-8 py-2 rounded-full border border-gray-300
