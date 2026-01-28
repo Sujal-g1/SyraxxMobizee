@@ -1,7 +1,9 @@
-import React, { useState, useRef } from "react";
-import hornSound from "../assets/horn.mp3"; // Make sure this path is correct
+import React, { useState, useRef , useEffect } from "react";
+import hornSound from "../assets/horn.mp3";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
-const PanicButtonWithLocation = () => {
+const PanicButton = ({user}) => {
   const [pressCount, setPressCount] = useState(0);
   const [isPanic, setIsPanic] = useState(false);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
@@ -10,8 +12,8 @@ const PanicButtonWithLocation = () => {
   const [loadingLocation, setLoadingLocation] = useState(false);
 
   const audioRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Panic button handler
   const handlePanic = () => {
     const newCount = pressCount + 1;
     setPressCount(newCount);
@@ -20,7 +22,6 @@ const PanicButtonWithLocation = () => {
       setIsPanic(true);
       setError(null);
 
-      // Play panic sound
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
@@ -28,58 +29,52 @@ const PanicButtonWithLocation = () => {
         setIsSoundPlaying(true);
       }
 
-      // Get exact location
       getLocation();
     }
   };
 
-  // Get user's current location once
   const getLocation = () => {
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
+      setError("Geolocation not supported");
       return;
     }
 
     setLoadingLocation(true);
-    setError(null);
-
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      (pos) => {
         setLocation({
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
         });
         setLoadingLocation(false);
       },
       () => {
-        // Instead of showing actual error message → show "Getting Location..."
-        setError("Getting Location...");
+        setError("Getting location...");
         setLoadingLocation(false);
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   };
 
-  // Stop panic & sound, reset everything
   const handleStop = () => {
-    setIsPanic(false);
-    setPressCount(0);
-    setLocation({ lat: null, lon: null });
-    setError(null);
-    setLoadingLocation(false);
+  setIsPanic(false);
+  setPressCount(0);
+  setLocation({ lat: null, lon: null });
+  setError(null);
+  setLoadingLocation(false);
 
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsSoundPlaying(false);
-    }
-  };
+  if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    setIsSoundPlaying(false);
+  }
 
-  // Stop sound only
+  // ⏩ Redirect back to trigger page
+  navigate("/Homepage"); // change this route if needed
+};
+
+ 
+
   const handleStopSound = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -88,67 +83,87 @@ const PanicButtonWithLocation = () => {
     }
   };
 
-  // When sound ends, update state
-  const handleAudioEnded = () => {
-    setIsSoundPlaying(false);
-  };
-
   return (
-    <div
-      className={`flex flex-col items-center justify-center h-screen px-6 transition-all duration-500 ${
-        isPanic ? "bg-red-100 animate-pulse" : "bg-white"
-      }`}
-    >
-      <h1 className="text-4xl font-bold mb-8 text-center">
-        {isPanic ? "🚨 Panic Activated!" : "Panic Button System"}
-      </h1>
+    <>
 
-      {/* Buttons vertical layout */}
-      <div className="flex flex-col items-center space-y-4 mb-6">
+    <Navbar user={user}/>
+
+    <div
+      className={`min-h-screen flex items-center justify-center px-4 transition-colors duration-500
+      ${isPanic ? "bg-red-100" : "bg-gray-200"}`}
+    >
+      <div
+        className={`relative w-full max-w-md rounded-3xl p-8 text-center shadow-xl shadow-red-300
+        ${isPanic ? "bg-white border-2 border-red-500" : "bg-gray-50"}`}
+      >
+        {/* Pulse Ring */}
+        {isPanic && (
+          <div className="absolute inset-0 rounded-3xl border-4 border-red-400 animate-ping opacity-30" />
+        )}
+
+        {/* Title */}
+        <h1 className="text-2xl font-bold mb-2">
+          {isPanic ? "🚨 Panic Mode Active" : "Emergency Panic Button"}
+        </h1>
+
+        <p className="text-gray-600 mb-6 text-sm">
+          Press the button 3 times to activate emergency mode
+        </p>
+
+        {/* Panic Button */}
         <button
           onClick={handlePanic}
-          className={`text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all duration-300 ${
-            isPanic ? "bg-red-700 hover:bg-red-800" : "bg-blue-600 hover:bg-blue-700"
+          className={`mx-auto w-40 h-40 rounded-full text-white text-xl font-bold
+          flex items-center justify-center shadow-lg transition-all duration-300 
+          ${
+            isPanic
+              ? "bg-red-700 hover:bg-red-800 scale-105"
+              : "bg-red-500 hover:bg-red-600"
           }`}
         >
-          {isPanic ? "Trigger Again" : `Press Panic Button (${pressCount}/3)`}
+          {isPanic ? "ALERT" : `${pressCount}/3`}
         </button>
 
-        {isPanic && (
-          <button
-            onClick={handleStop}
-            className="bg-gray-700 hover:bg-gray-800 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all duration-300"
-          >
-            Stop Panic
-          </button>
-        )}
+        {/* Controls */}
+        <div className="mt-6 flex flex-col gap-3">
+          {isPanic && (
+            <button
+              onClick={handleStop}
+              className="py-3 rounded-xl bg-gray-800 text-white font-semibold hover:bg-black transition"
+            >
+              Stop Panic
+            </button>
+          )}
 
-        {isSoundPlaying && (
-          <button
-            onClick={handleStopSound}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all duration-300"
-          >
-            Stop Sound
-          </button>
-        )}
-      </div>
-
-      {/* Location display */}
-      {loadingLocation && <p className="text-gray-500 mb-4">Getting location...</p>}
-
-      {error && <p className="text-blue-600 mb-4">{error}</p>}
-
-      {location.lat && location.lon && (
-        <div className="text-center mb-4">
-          <p className="text-lg font-semibold mb-2">📍 Current Location:</p>
-          <p>Latitude: {location.lat}</p>
-          <p>Longitude: {location.lon}</p>
+          {isSoundPlaying && (
+            <button
+              onClick={handleStopSound}
+              className="py-3 rounded-xl bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition"
+            >
+              Stop Sound
+            </button>
+          )}
         </div>
-      )}
 
-      <audio ref={audioRef} src={hornSound} onEnded={handleAudioEnded} />
+        {/* Location Status */}
+        <div className="mt-6 text-sm text-gray-700">
+          {loadingLocation && <p>📡 Getting location...</p>}
+          {error && <p className="text-blue-600">{error}</p>}
+
+          {location.lat && location.lon && (
+            <div className="mt-3 p-4 rounded-xl bg-gray-100 text-left">
+              <p className="font-semibold mb-1">📍 Current Location</p>
+              <p>Lat: {location.lat}</p>
+              <p>Lon: {location.lon}</p>
+            </div>
+          )}
+        </div>
+
+        <audio ref={audioRef} src={hornSound} />
+      </div>
     </div>
+    </>
   );
 };
 
-export default PanicButtonWithLocation;
+export default PanicButton;

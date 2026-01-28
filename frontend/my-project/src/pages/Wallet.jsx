@@ -271,7 +271,7 @@ export default function Wallet({ user }) {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-black text-white font-semibold shadow disabled:opacity-60"
               >
-                {loading ? "Processing..." : "Simulate UPI Recharge"}
+                {loading ? "Processing..." : "Recharge"}
               </motion.button>
 
               {message && (

@@ -6,6 +6,10 @@ const userFeature = require("./routes/userFeature");
 const routeSearch = require("./routes/routeSearch");
 const routeBuses = require("./routes/routeBuses");
 
+const adminAuthRoutes = require("./routes/admin/adminAuth.routes");
+const adminDashboardRoutes = require("./routes/admin/dashboard.routes");
+
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -37,13 +41,14 @@ app.use((req, res, next) => {
 // Database
 connectDB();
 
-// Routes
-// const Bus = require("./database/models/bus");
 
 // Mount ALL user routes
 app.use("/api/users", userFeature);
 app.use("/api/routes", routeSearch);
 app.use("/api/routes", routeBuses);
+
+app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin/dashboard", adminDashboardRoutes);
 
 
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));

@@ -243,7 +243,7 @@ const handleSeeRoute = () => {
             initial={{y:80}}
             animate={{y:0}}
             transition={{
-              duration:1.5,
+              duration:1.8,
               delay:0.2,ease: [0.16, 1, 0.3, 1],
               
             }}

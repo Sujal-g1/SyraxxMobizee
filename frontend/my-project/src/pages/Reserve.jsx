@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "../components/Navbar";
 
 const vehicleOptions = [
-  { name: "Mini Bus", min: 1, max: 15, desc: "Ideal for small groups", status: "available", pricePerSeat: 200 },
-  { name: "Van", min: 4, max: 10, desc: "Compact family vehicle", status: "available", pricePerSeat: 150 },
-  { name: "Big Bus", min: 16, max: 50, desc: "Great for large groups", status: "available", pricePerSeat: 180 },
-  { name: "Luxury Coach", min: 20, max: 50, desc: "Comfort with luxury", status: "available", pricePerSeat: 300 },
+  { name: "Mini Bus", min: 1, max: 15, desc: "Ideal for small groups", pricePerSeat: 200 },
+  { name: "Van", min: 4, max: 10, desc: "Perfect for families", pricePerSeat: 150 },
+  { name: "Big Bus", min: 16, max: 50, desc: "Best for large groups", pricePerSeat: 180 },
+  { name: "Luxury Coach", min: 20, max: 50, desc: "Premium comfort & luxury", pricePerSeat: 300 },
 ];
 
-export default function Reserve() {
+export default function Reserve({user}) {
   const [travelDate, setTravelDate] = useState("");
   const [occupancyType, setOccupancyType] = useState("");
   const [seatCount, setSeatCount] = useState("");
@@ -25,8 +27,9 @@ export default function Reserve() {
       return;
     }
     const seats = parseInt(seatCount);
-    const match = vehicleOptions.find((v) => seats >= v.min && seats <= v.max);
-    setSelectedVehicle(match);
+    setSelectedVehicle(
+      vehicleOptions.find(v => seats >= v.min && seats <= v.max)
+    );
   }, [seatCount]);
 
   const handleBooking = () => {
@@ -35,116 +38,129 @@ export default function Reserve() {
     }
   };
 
-  const totalPrice = booked && selectedVehicle && seatCount
-    ? selectedVehicle.pricePerSeat * parseInt(seatCount)
-    : null;
+  const totalPrice =
+    booked && selectedVehicle
+      ? selectedVehicle.pricePerSeat * seatCount
+      : null;
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50 flex flex-col items-center">
-      <h2 className="text-4xl font-extrabold mb-12 text-gray-900 drop-shadow-sm select-none">
-        🚌 Reserve a Vehicle
-      </h2>
+    <>
+  <Navbar user={user}/>
 
-      {/* Form Container with cyan gradient */}
-      <div
-        className="max-w-2xl w-full rounded-3xl p-10 shadow-xl space-y-8 border border-cyan-300"
-        style={{
-          background: "linear-gradient(135deg, #a0f0f0 0%, #30cfd0 100%)",
-        }}
-      >
-        {/* Travel Date */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Travel Date</label>
-          <input
-            type="date"
-            value={travelDate}
-            onChange={(e) => setTravelDate(e.target.value)}
-            className="w-full px-5 py-3 rounded-lg bg-white border border-cyan-400 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-          />
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-100
+                 flex items-center justify-center px-4 py-12"
+    >
+      <div className="w-full max-w-4xl">
 
-        {/* Occupancy Type */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Occupancy Type</label>
-          <div className="flex gap-6">
-            {["Group", "Family", "Corporate"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setOccupancyType(type)}
-                className={`px-6 py-3 rounded-full font-semibold text-sm transition-shadow ${
-                  occupancyType === type
-                    ? "bg-cyan-400 text-white shadow-md"
-                    : "bg-white text-cyan-800 hover:bg-cyan-300 hover:text-white border border-cyan-400"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
+        {/* Header */}
+        <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10">
+          🚌 Smart Vehicle Reservation
+        </h1>
+
+        {/* Glass Card */}
+        <div className="relative rounded-3xl p-8 md:p-10
+                        bg-white/70 backdrop-blur-xl
+                        shadow-[0_20px_60px_rgba(0,0,0,0.12)]
+                        border border-white">
+
+          {/* Form */}
+          <div className="space-y-8">
+
+            {/* Date */}
+            <InputBlock label="Travel Date">
+              <input
+                type="date"
+                value={travelDate}
+                onChange={(e) => setTravelDate(e.target.value)}
+                className="input"
+              />
+            </InputBlock>
+
+            {/* Occupancy */}
+            <InputBlock label="Occupancy Type">
+              <div className="flex flex-wrap gap-3">
+                {["Group", "Family", "Corporate"].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setOccupancyType(type)}
+                    className={`pill ${
+                      occupancyType === type
+                        ? "pill-active"
+                        : "pill-inactive"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </InputBlock>
+
+            {/* Seats */}
+            <InputBlock label="Seats Required">
+              <input
+                type="number"
+                value={seatCount}
+                onChange={(e) => setSeatCount(e.target.value)}
+                className="input"
+                placeholder="e.g. 12"
+              />
+            </InputBlock>
+
+            {/* Demographics */}
+            <InputBlock label="Passengers">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  ["Females", female, setFemale],
+                  ["Elderly", elderly, setElderly],
+                  ["Children", children, setChildren],
+                ].map(([label, value, setter]) => (
+                  <input
+                    key={label}
+                    type="number"
+                    placeholder={label}
+                    value={value}
+                    onChange={(e) => setter(e.target.value)}
+                    className="input"
+                  />
+                ))}
+              </div>
+            </InputBlock>
+
+            {/* Vehicle Match */}
+            <AnimatePresence>
+              {selectedVehicle && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="rounded-2xl p-6 bg-gradient-to-r
+                             from-green-100 to-green-50
+                             border border-green-300"
+                >
+                  <p className="text-sm font-semibold text-green-700">
+                    ✔ Best Match
+                  </p>
+                  <h3 className="text-2xl font-bold">
+                    {selectedVehicle.name}
+                  </h3>
+                  <p className="text-gray-600">{selectedVehicle.desc}</p>
+                  <p className="mt-2 font-semibold">
+                    ₹{selectedVehicle.pricePerSeat} / seat
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        {/* Seat Count */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Total Seats Required</label>
-          <input
-            type="number"
-            min="1"
-            max="50"
-            value={seatCount}
-            onChange={(e) => setSeatCount(e.target.value)}
-            placeholder="Enter number of seats"
-            className="w-full px-5 py-3 rounded-lg bg-white border border-cyan-400 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-          />
-        </div>
-
-        {/* Demographics */}
-        <div className="grid grid-cols-3 gap-6">
-          <div>
-            <label className="block text-cyan-900 text-sm mb-1">Females</label>
-            <input
-              type="number"
-              min="0"
-              value={female}
-              onChange={(e) => setFemale(e.target.value)}
-              className="w-full px-4 py-3 rounded-md bg-white border border-cyan-400 text-cyan-900 placeholder-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label className="block text-cyan-900 text-sm mb-1">Elderly</label>
-            <input
-              type="number"
-              min="0"
-              value={elderly}
-              onChange={(e) => setElderly(e.target.value)}
-              className="w-full px-4 py-3 rounded-md bg-white border border-cyan-400 text-cyan-900 placeholder-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label className="block text-cyan-900 text-sm mb-1">Children</label>
-            <input
-              type="number"
-              min="0"
-              value={children}
-              onChange={(e) => setChildren(e.target.value)}
-              className="w-full px-4 py-3 rounded-md bg-white border border-cyan-400 text-cyan-900 placeholder-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-              placeholder="0"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Price per seat */}
-      {selectedVehicle && seatCount && (
-        <div className="max-w-2xl w-full mt-8 text-center text-xl font-semibold text-cyan-900 select-none drop-shadow-sm">
-          Price per seat: <span className="text-cyan-800">₹{selectedVehicle.pricePerSeat}</span>
-        </div>
-      )}
-
-      {/* Book Button */}
-      <div className="max-w-2xl w-full mt-6">
-        <button
+        {/* CTA */}
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleBooking}
           disabled={
             !selectedVehicle ||
@@ -153,69 +169,94 @@ export default function Reserve() {
             !seatCount ||
             totalDemographics > seatCount
           }
-          className="w-full py-4 rounded-xl bg-blue-900 hover:bg-blue-500 text-white font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg select-none"
+          className="mt-8 w-full py-4 rounded-2xl
+                     bg-black text-white font-bold text-lg
+                     disabled:opacity-40"
         >
-          Book Now
-        </button>
+          Confirm Booking
+        </motion.button>
 
+        {/* Error */}
         {totalDemographics > seatCount && (
-          <p className="text-red-600 text-sm mt-3 text-center font-semibold select-none">
-            ⚠️ Total demographic entries exceed seat count.
+          <p className="mt-3 text-center text-red-600 font-medium">
+            Passenger count exceeds seat limit
           </p>
         )}
+
+        {/* Confirmation */}
+        <AnimatePresence>
+          {booked && (
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-10 bg-white rounded-3xl p-8
+                         shadow-2xl border border-green-300"
+            >
+              <h3 className="text-2xl font-bold text-center mb-6 text-green-700">
+                ✅ Booking Confirmed
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  ["Vehicle", selectedVehicle.name],
+                  ["Seats", seatCount],
+                  ["Date", travelDate],
+                  ["Occupancy", occupancyType],
+                  ["Total Price", `₹${totalPrice}`],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex justify-between">
+                    <span className="font-medium">{k}</span>
+                    <span>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Booking Confirmation */}
-      {booked && (
-        <div className="max-w-xl w-full mt-12 bg-white rounded-3xl p-8 shadow-2xl border border-cyan-300 select-none">
-          <h3 className="text-3xl font-extrabold mb-6 text-cyan-900 text-center">✅ Reservation Confirmed</h3>
-
-          <table className="w-full text-left border-collapse">
-            <tbody>
-              {[
-                ["Travel Date", travelDate],
-                ["Vehicle", selectedVehicle?.name],
-                ["Occupancy Type", occupancyType],
-                ["Seats", seatCount],
-                ["Females", female],
-                ["Elderly", elderly],
-                ["Children", children],
-                ["Total Price", `₹${totalPrice}`],
-              ].map(([label, value], idx) => (
-                <tr
-                  key={label}
-                  className={idx % 2 === 0 ? "bg-cyan-50" : ""}
-                >
-                  <td className="py-3 px-5 font-semibold text-cyan-800 border-b border-cyan-200">
-                    {label}
-                  </td>
-                  <td className="py-3 px-5 text-cyan-700 border-b border-cyan-200">
-                    {value}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Animations */}
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-in-out;
+      {/* Reusable styles */}
+      <style>{`
+        .input {
+          width: 100%;
+          padding: 14px;
+          border-radius: 14px;
+          border: 1px solid #d1d5db;
+          outline: none;
+          transition: 0.2s;
         }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(12px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        .input:focus {
+          border-color: black;
+        }
+        .pill {
+          padding: 10px 18px;
+          border-radius: 999px;
+          font-weight: 600;
+          transition: 0.2s;
+        }
+        .pill-active {
+          background: black;
+          color: white;
+        }
+        .pill-inactive {
+          background: #f3f4f6;
+        }
+        .pill-inactive:hover {
+          background: #e5e7eb;
         }
       `}</style>
+    </motion.div>
+
+    </>
+  );
+}
+
+/* Helper */
+function InputBlock({ label, children }) {
+  return (
+    <div>
+      <label className="block mb-2 font-semibold">{label}</label>
+      {children}
     </div>
   );
 }

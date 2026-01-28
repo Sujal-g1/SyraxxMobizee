@@ -13,6 +13,9 @@ import Reserve from "./pages/Reserve";
 import PanicButton from "./pages/PanicButton";
 import RouteSearch from "./pages/RouteSearch";
 import Wallet from "./pages/Wallet";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
 
 
 import "leaflet/dist/leaflet.css";
@@ -83,6 +86,8 @@ const ProtectedRoute = ({ user,  loading, children }) => {
          <Route path="/panic" element={<PanicButton />} />
          <Route path="/wallet" element={<Wallet user={user} refreshUser={setUser} />} />
          <Route path="/routesearch" element={<RouteSearch />} />
+         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
         </Routes>
       </I18nextProvider>

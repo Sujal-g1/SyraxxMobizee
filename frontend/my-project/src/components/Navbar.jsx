@@ -113,8 +113,8 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
          initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{
-          delay:0.2,
-          duration: 1.5,
+          delay:0.5,
+          duration: 1.8,
           ease: [0.16, 1, 0.3, 1], 
         }}>
                
