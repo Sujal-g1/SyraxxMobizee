@@ -109,7 +109,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
     {/* Navbar */}
-        <motion.nav className="fixed top-0 left-0 w-full px-6 md:px-10 py-4 flex items-center bg-black text-white justify-between z-50 shadow-lg"
+        <motion.nav className="fixed top-0 left-0 w-full px-6 max-w-full overflow-x-hidden md:px-10 py-4 flex items-center bg-black text-white justify-between z-50 shadow-lg"
          initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{
@@ -119,26 +119,27 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
         }}>
                
     
-        <div className="flex items-center md:gap-10 gap-4">
+        <div className="flex items-center gap-3 max-w-[70%] overflow-hidden">
             <h1 
             onClick={()=> navigate("/Homepage")}
             className="text-xl md:text-2xl font-semibold tracking-wide">Mobizee</h1> 
 
-         <div className="flex items-center gap-2  ml-7">
+         <div className="flex items-center gap-2  md:ml-7">
         {/* location */}
          <div className=" flex items-center gap-1 text-white text-sm md:text-base
             relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full
                  after:bg-gradient-to-r after:from-orange-500 after:via-white after:to-green-500
                  after:scale-x-0 after:origin-left hover:after:scale-x-100
                  after:transition-transform after:duration-300">
-         <MdLocationOn className="text-orange-500 w-5 h-5"/> {locationName}       {/* Live location  */}
+         <MdLocationOn className="text-orange-500 w-5 h-5 flex-shrink-0"/> 
+         <span className="truncate">{locationName}</span>      {/* Live location  */}
         </div>
     
          {/* // multilanguage */}
         <div className="relative">
       <button  
         onClick={() => setShowLangOptions(prev => !prev)}
-        className="text-white px-5 py-2 flex items-center gap-3 text-xl md:text-2xl hover:text-green-500 transition-colors">
+        className="text-white px-4 py-2 flex items-center gap-3 text-xl md:text-2xl hover:text-green-500 transition-colors">
         <GrLanguage />
       </button>
     
@@ -158,11 +159,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
     </div>
         
       </div>
-        </div>
-            
+        </div> 
     
            {/* right side */}
-    
             <div className="hidden lg:flex items-center gap-4">
             
              {/* <ThemeToggle /> */}
@@ -259,4 +258,3 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
 }
 
 export default Navbar
-
