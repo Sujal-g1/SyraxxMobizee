@@ -422,7 +422,7 @@ router.get("/journey/history/:user_id", async (req, res) => {
     const journeys = await Journey.find({
       user_id: user_id,
       status: "COMPLETED",
-    }).sort({ tap_out_time: -1 });
+    }).sort({ ended_at: -1 });
 
     res.json({ journeys });
   } catch (err) {

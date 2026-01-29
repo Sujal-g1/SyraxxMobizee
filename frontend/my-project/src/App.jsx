@@ -14,11 +14,12 @@ import RouteSearch from "./pages/RouteSearch";
 import Wallet from "./pages/Wallet";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
+import WalletEntry from './pages/WalletEntry';
 import "leaflet/dist/leaflet.css";
 
 import { I18nextProvider } from 'react-i18next';
 import i18n from './pages/multiLang';
+
 
 const App = () => {
  
@@ -47,6 +48,28 @@ useEffect(() => {
 
   setLoading(false);
 }, []);
+
+const API = import.meta.env.VITE_API_URL;
+
+const refreshUser = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API}/api/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+    }
+  } catch (err) {
+    console.error("Refresh user error:", err);
+  }
+};
 
 
 const ProtectedRoute = ({ user,  loading, children }) => {
@@ -80,7 +103,10 @@ const ProtectedRoute = ({ user,  loading, children }) => {
           <Route path="/businfo" element={<BusInfo user={user}/>} />
          <Route path="/reserve" element={<Reserve />} />
          <Route path="/panic" element={<PanicButton user={user}/>} />
-         <Route path="/wallet" element={<Wallet user={user} refreshUser={setUser} />} />
+         {/* <Route path="/wallet" element={<Wallet user={user} refreshUser={setUser} />} /> */}
+         <Route
+       path="/wallet"
+        element={<WalletEntry user={user} refreshUser={refreshUser} />}/>
          <Route path="/routesearch" element={<RouteSearch />} />
          <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />

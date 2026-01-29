@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CreditCard,
-  QrCode,
-  History,
-  Play,
-  StopCircle,
-} from "lucide-react";
+import tap from "../../public/tap.mp3"
+import { CreditCard,QrCode, History,Play,StopCircle } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 
 const API = import.meta.env.VITE_API_URL;
@@ -24,6 +19,26 @@ export default function NfcCard({ user, setUser }) {
   const [allStops, setAllStops] = useState([]);
 const [sourceSuggestions, setSourceSuggestions] = useState([]);
 const [destSuggestions, setDestSuggestions] = useState([]);
+// NFC enhancements
+const [tapStartTime, setTapStartTime] = useState(null);
+const [elapsed, setElapsed] = useState(0);
+const [routeStops, setRouteStops] = useState([]);
+const [activeStopIndex, setActiveStopIndex] = useState(0);
+
+
+useEffect(() => {
+  if (status === "RECEIPT") {
+    const t = setTimeout(() => {
+      setStatus("IDLE");
+      setSource("");
+      setDestination("");
+      setFareResult(null);
+    }, 3000);
+
+    return () => clearTimeout(t);
+  }
+}, [status]);
+
 
 useEffect(() => {
   const fetchStops = async () => {
@@ -44,9 +59,34 @@ useEffect(() => {
       console.error("Failed to fetch stops", err);
     }
   };
-
   fetchStops();
 }, []);
+
+useEffect(() => {
+  if (status !== "ACTIVE" || !tapStartTime) return;
+
+  const interval = setInterval(() => {
+    setElapsed(Math.floor((Date.now() - tapStartTime) / 1000));
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [status, tapStartTime]);
+
+const playTapSound = () => {
+  const audio = new Audio(tap);
+  audio.play().catch(() => {});
+};
+
+const vibrate = () => {
+  if (navigator.vibrate) navigator.vibrate(40);
+};
+
+const formatTime = (s) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+};
+
 
 const filterStops = (value) => {
   if (!value) return [];
@@ -55,6 +95,54 @@ const filterStops = (value) => {
     name.toLowerCase().includes(v)
   ).slice(0, 6); // limit to 6 suggestions
 };
+
+
+const fetchRouteSegment = async (src, dest) => {
+  if (!src || !dest) return;
+
+  try {
+    const res = await fetch(`${API}/api/routes/all`);
+    const data = await res.json();
+
+    for (const route of data.routes) {
+      const stops = route.stops.map(s => s.name);
+
+      const i1 = stops.indexOf(src);
+      const i2 = stops.indexOf(dest);
+
+      if (i1 !== -1 && i2 !== -1) {
+        const segment =
+          i1 <= i2
+            ? stops.slice(i1, i2 + 1)
+            : stops.slice(i2, i1 + 1).reverse();
+
+        setRouteStops(segment);
+        setActiveStopIndex(0);
+        break;
+      }
+    }
+  } catch (err) {
+    console.error("Route fetch failed", err);
+  }
+};
+
+useEffect(() => {
+  if (status === "ACTIVE" && destination) {
+    fetchRouteSegment(source, destination);
+  }
+}, [destination]);
+
+useEffect(() => {
+  if (routeStops.length === 0 || status !== "ACTIVE") return;
+
+  const interval = setInterval(() => {
+    setActiveStopIndex((i) =>
+      i < routeStops.length - 1 ? i + 1 : i
+    );
+  }, 1500);
+
+  return () => clearInterval(interval);
+}, [routeStops, status]);
 
 
   const token = localStorage.getItem("token");
@@ -135,7 +223,12 @@ useEffect(() => {
 
       setJourneyId(data.journey_id);
       setStatus("ACTIVE");
+      fetchRouteSegment(source, destination);
       alert("Journey started");
+      playTapSound();
+      vibrate();
+      setTapStartTime(Date.now());
+
     } catch (err) {
       alert(err.message);
     }
@@ -164,7 +257,10 @@ useEffect(() => {
     if (!res.ok) throw new Error(data.error || "Tap-out failed");
 
     setFareResult(data);
-    setStatus("COMPLETED");
+    setStatus("RECEIPT");
+    playTapSound();
+    vibrate();
+
     setJourneyId(null);
     await fetchHistory();
 
@@ -255,118 +351,185 @@ localStorage.setItem("user", JSON.stringify(updatedUser));
           <AnimatePresence mode="wait">
 
             {/* 🚍 Journey Panel */}
-            {tab === "journey" && (
-              <motion.div
-                key="journey"
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl p-5 shadow space-y-4"
-              >
-                <h3 className="font-semibold text-gray-800">Journey Control</h3>
+           {/* 🚍 Journey Panel — VERSION A */}
+{tab === "journey" && (
+  <motion.div
+    key="journey"
+    initial={{ opacity: 0, x: 30 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -30 }}
+    transition={{ duration: 0.3 }}
+    className="bg-white rounded-2xl p-6 shadow space-y-6 text-center"
+  >
+    {status === "IDLE" && (
+      <>
+        <h3 className="font-semibold text-gray-800">
+          Tap to Enter
+        </h3>
 
-              <div className="relative">
-  <input
-    type="text"
-    placeholder="Source Station"
-    value={source}
-    onChange={(e) => {
-      const val = e.target.value;
-      setSource(val);
-      setSourceSuggestions(filterStops(val));
-    }}
-    disabled={status === "ACTIVE"}
-    className="w-full rounded-lg px-3 py-2 border border-gray-200 focus:ring-2 focus:ring-black"
-  />
+        {/* Source input */}
+        <div className="relative text-left">
+          <input
+            value={source}
+            onChange={(e) => {
+              const v = e.target.value;
+              setSource(v);
+              setSourceSuggestions(filterStops(v));
+            }}
+            placeholder="Source Station"
+            className="w-full border px-3 py-2 rounded-lg"
+          />
 
-  {sourceSuggestions.length > 0 && status !== "ACTIVE" && (
-    <div className="absolute z-10 w-full bg-white border rounded-lg shadow mt-1 max-h-40 overflow-y-auto">
-      {sourceSuggestions.map((name) => (
-        <div
-          key={name}
-          onClick={() => {
-            setSource(name);
-            setSourceSuggestions([]);
-          }}
-          className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-        >
-          {name}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-
-
-            <div className="relative">
-  <input
-    type="text"
-    placeholder="Destination Station"
-    value={destination}
-    onChange={(e) => {
-      const val = e.target.value;
-      setDestination(val);
-      setDestSuggestions(filterStops(val));
-    }}
-    disabled={status !== "ACTIVE"}
-    className="w-full rounded-lg px-3 py-2 border border-gray-200 focus:ring-2 focus:ring-black"
-  />
-
-  {destSuggestions.length > 0 && status === "ACTIVE" && (
-    <div className="absolute z-10 w-full bg-white border rounded-lg shadow mt-1 max-h-40 overflow-y-auto">
-      {destSuggestions.map((name) => (
-        <div
-          key={name}
-          onClick={() => {
-            setDestination(name);
-            setDestSuggestions([]);
-          }}
-          className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-        >
-          {name}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-
-
-                <div className="flex gap-3">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleTapIn}
-                    disabled={status === "ACTIVE"}
-                    className="flex-1 py-3 rounded-xl bg-black text-white font-semibold shadow disabled:opacity-60 flex items-center justify-center gap-2"
-                  >
-                    <Play className="w-4 h-4" /> Start
-                  </motion.button>
-
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleTapOut}
-                    disabled={status !== "ACTIVE"}
-                    className="flex-1 py-3 rounded-xl bg-red-600 text-white font-semibold shadow disabled:opacity-60 flex items-center justify-center gap-2"
-                  >
-                    <StopCircle className="w-4 h-4" /> End
-                  </motion.button>
+          {sourceSuggestions.length > 0 && (
+            <div className="absolute bg-white border rounded-lg shadow w-full mt-1 z-10">
+              {sourceSuggestions.map((s) => (
+                <div
+                  key={s}
+                  onClick={() => {
+                    setSource(s);
+                    setSourceSuggestions([]);
+                  }}
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {s}
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-                {fareResult && (
-                  <div className="mt-3 text-sm space-y-1">
-                    <p>From: {fareResult.source}</p>
-                    <p>To: {fareResult.destination}</p>
-                    <p>Distance: {fareResult.distance_km} km</p>
-                    <p className="text-green-700 font-semibold">
-                      Fare: ₹{fareResult.fare}
-                    </p>
-                    <p className="text-blue-700">
-                      Balance Left: ₹{fareResult.wallet_balance}
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
+        <motion.div
+          whileTap={{ scale: 0.9 }}
+          onClick={handleTapIn}
+          className="mx-auto w-48 h-48 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg shadow-xl cursor-pointer"
+        >
+          TAP IN
+        </motion.div>
+      </>
+    )}
+
+    {status === "ACTIVE" && (
+      <>
+        <p className="text-green-600 font-semibold">
+          Journey Active
+        </p>
+
+        <p className="text-sm text-gray-500">
+          Time: {formatTime(elapsed)}
+        </p>
+
+        <p className="text-sm">
+          From: <b>{source}</b>
+        </p>
+
+        {/* Destination */}
+        <div className="relative text-left">
+          <input
+            value={destination}
+            onChange={(e) => {
+              const v = e.target.value;
+              setDestination(v);
+              setDestSuggestions(filterStops(v));
+            }}
+            placeholder="Destination Station"
+            className="w-full border px-3 py-2 rounded-lg"
+          />
+
+          {destSuggestions.length > 0 && (
+            <div className="absolute bg-white border rounded-lg shadow w-full mt-1 z-10">
+              {destSuggestions.map((s) => (
+                <div
+                  key={s}
+                  onClick={() => {
+                    setDestination(s);
+                    setDestSuggestions([]);
+                  }}
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <motion.div
+          whileTap={{ scale: 0.9 }}
+          onClick={handleTapOut}
+          className="mx-auto w-48 h-48 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-lg shadow-xl cursor-pointer"
+        >
+          TAP OUT
+        </motion.div>
+      </>
+    )}
+
+    <div className="flex items-center overflow-x-auto gap-3 py-2">
+
+  {routeStops.map((stop, i) => (
+    <div key={i} className="flex items-center gap-2">
+
+      <div
+        className={`w-3 h-3 rounded-full ${
+          i <= activeStopIndex
+            ? "bg-black"
+            : "bg-gray-300"
+        }`}
+      />
+
+      <span
+        className={`text-xs ${
+          i === activeStopIndex
+            ? "font-bold text-black"
+            : "text-gray-500"
+        }`}
+      >
+        {stop}
+      </span>
+
+      {i !== routeStops.length - 1 && (
+        <div className="w-6 h-[2px] bg-gray-300" />
+      )}
+    </div>
+  ))}
+
+</div>
+
+
+    {status === "RECEIPT" && fareResult && (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-gray-50 rounded-xl p-4 shadow-inner space-y-2"
+      >
+        <p className="text-green-600 font-bold text-xl">
+          ✔ Journey Complete
+        </p>
+
+        <p className="text-sm">
+          {fareResult.source} → {fareResult.destination}
+        </p>
+
+        <p className="text-sm text-gray-600">
+          {fareResult.distance_km} km
+        </p>
+
+        <p className="text-lg font-semibold">
+          ₹{fareResult.fare}
+        </p>
+
+        <p className="text-blue-700">
+          Balance: ₹{fareResult.wallet_balance}
+        </p>
+
+        <p className="text-xs text-gray-400">
+          Resetting…
+        </p>
+      </motion.div>
+    )}
+  </motion.div>
+)}
+
+
 
             {/* 🔳 QR Panel */}
             {tab === "qr" && (
@@ -420,9 +583,8 @@ localStorage.setItem("user", JSON.stringify(updatedUser));
                         <p className="font-medium">
                           {j.source_station} → {j.destination_station}
                         </p>
-                        <p className="text-[11px] text-gray-500">
-                          {new Date(j.tap_out_time).toLocaleString()}
-                        </p>
+                       <p className="text-[11px] text-gray-500">
+                        {new Date(j.ended_at).toLocaleString()}</p>
                       </div>
 
                       <div className="text-right">
