@@ -6,7 +6,7 @@ import { MdLocationOn } from "react-icons/md";
 import { GrLanguage } from "react-icons/gr";
 import { GoAlertFill } from "react-icons/go";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
-import Wallet from "../pages/Wallet.jsx";
+import { IoIdCardOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion'
@@ -240,52 +240,136 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
 
           {/* ADD THIS SPACER HERE */}
 <div className="h-[72px] md:h-[80px]"></div>
+      
 
-          {/* MOBILE OVERLAY MENU */}
-      <div className={`fixed inset-0 backdrop-blur-xl bg-black/10 z-[100] flex flex-col items-center justify-center gap-8 transition-transform duration-500 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+      {/* MOBILE OVERLAY MENU */}
+{isMenuOpen && (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[100] lg:hidden"
+  >
+    {/* dark backdrop */}
+    <div
+      onClick={toggleMenu}
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+    />
 
-        {/* Close Button Inside Menu */}
-        <button onClick={toggleMenu} className="absolute top-6 right-8 text-4xl text-white">
-          <RxCross2 />
-        </button>
+    {/* sliding panel */}
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ type: "spring", stiffness: 120 }}
+      className="absolute right-0 top-0 h-full w-[85%] max-w-sm
+                 bg-gradient-to-b from-black/90 to-black/70
+                 backdrop-blur-xl border-l border-white/10
+                 shadow-2xl flex flex-col p-8 gap-8 text-white"
+    >
+      {/* close button */}
+      <button
+        onClick={toggleMenu}
+        className="absolute top-6 right-6 text-3xl hover:rotate-90 transition"
+      >
+        <RxCross2 />
+      </button>
 
-        <div className="flex flex-col items-center gap-8 text-white text-2xl  px-15 py-10 rounded-lg bg-black/60">
-            {/* Account Info */}
-            <div className="flex flex-col items-center gap-2 mb-4">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black">
-                    <FaUser size={30} />
-                </div>
-                <span className="font-semibold">{user ? user.firstName : "Guest"}</span>
-              
-
-            </div>
-
-            {/* mobMagic card */}
-             <button onClick={()=>navigate("/nfcCard")}
-            className="md:hidden  text-white text-md">
-            MobMagic Card</button>
-
-            {/* Menu Links */}
-            <button onClick={() => { navigate("/wallet"); toggleMenu(); }} className="flex items-center gap-4 hover:text-green-500">
-                <FaWallet /> Wallet
-            </button>
-
-            <button onClick={() => { navigate("/panic"); toggleMenu(); }} className="flex items-center gap-4 text-red-500">
-                <GoAlertFill /> Panic Button
-            </button>
-
-            <div className="flex items-center gap-4 text-green-500 border border-green-500 px-6 py-2 rounded-full">
-                <MdStars /> {greenPoints} Points
-            </div>
-
-             <button 
-            onClick={handleLogout}
-            className="text-white hover:text-red-600 text-xl flex items-center gap-2 border px-6 py-2 rounded-full">
-              <FiLogOut />
-              Logout
-            </button>
+      {/* account header */}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="flex flex-col items-center gap-3 mt-8"
+      >
+        <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center text-black shadow-lg">
+          <FaUser size={36} />
         </div>
-      </div>
+        <span className="text-lg font-semibold">
+          {user ? user.firstName : "Guest"}
+        </span>
+      </motion.div>
+
+      {/* menu items */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: { staggerChildren: 0.1 }
+          }
+        }}
+        className="flex flex-col gap-6 mt-6 text-lg"
+      >
+        {[
+          {
+            icon:<IoIdCardOutline />,
+            label: "MobMagic Card",
+            action: () => navigate("/nfccard")
+          },
+          {
+            icon: <FaWallet />,
+            label: "Wallet",
+            action: () => navigate("/wallet")
+          },
+          {
+            icon: <GoAlertFill />,
+            label: "Panic",
+            action: () => navigate("/panic"),
+            className: "text-red-400"
+          }
+        ].map((item, i) => (
+          <motion.button
+            key={i}
+            variants={{
+              hidden: { x: 40, opacity: 0 },
+              visible: { x: 0, opacity: 1 }
+            }}
+            onClick={() => {
+              item.action();
+              toggleMenu();
+            }}
+            className={`flex items-center gap-4 px-6 py-4 rounded-xl
+                        bg-white/5 hover:bg-white/10
+                        border border-white/10
+                        transition ${item.className || ""}`}
+          >
+            {item.icon}
+            {item.label}
+          </motion.button>
+        ))}
+
+        {/* green points card */}
+        <motion.div
+          variants={{
+            hidden: { x: 40, opacity: 0 },
+            visible: { x: 0, opacity: 1 }
+          }}
+          className="flex items-center gap-4 px-6 py-4 rounded-xl
+                     bg-green-500/10 border border-green-500/30
+                     text-green-400 font-semibold"
+        >
+          <MdStars /> {greenPoints} Points
+        </motion.div>
+
+        {/* logout */}
+        <motion.button
+          variants={{
+            hidden: { x: 40, opacity: 0 },
+            visible: { x: 0, opacity: 1 }
+          }}
+          onClick={handleLogout}
+          className="flex items-center gap-4 px-6 py-4 rounded-xl
+                     bg-red-500/10 border border-red-500/30
+                     text-red-400 hover:bg-red-500/20 transition"
+        >
+          <FiLogOut /> Logout
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  </motion.div>
+)}
+
     
     
     

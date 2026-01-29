@@ -9,6 +9,9 @@ import TripSection from "../components/TripSection";
 import ETicketsSection from "../components/ETicketsSection";
 import GreenPointsSection from "../components/GreenPointsSection";
 import CustomerSupport from "../components/CustomerSupport";
+import LiveNearbyBuses from "../components/LiveNearbyBuses";
+
+
 
 
 function Homepage({user}) {
@@ -37,6 +40,7 @@ function Homepage({user}) {
     <ETicketsSection />
     <GreenPointsSection />
     <CustomerSupport />
+        <LiveNearbyBuses />
     <Footer />
 
     </div>

@@ -309,6 +309,10 @@ history.forEach((j) => {
   weekly[d] += j.fare || 0;
 });
 
+useEffect(() => {
+  console.log("History updated:", history);
+}, [history]);
+
 
   return (
     <>
