@@ -4,7 +4,7 @@ const Route = require("../../database/models/Route");
 const WalletTransaction = require("../../database/models/WalletTransaction");
 const Journey = require("../../database/models/Journey");
 
-router.get("/overview", async (req, res) => {
+router.get("/overview", adminAuth,  async (req, res) => {
   try {
     /* ---------------- ROUTES ---------------- */
     const totalRoutes = await Route.countDocuments();
@@ -42,28 +42,44 @@ router.get("/overview", async (req, res) => {
 
 // -------------------------------------
 
-router.get("/usage", async (req, res) => {
+router.get("/usage", adminAuth, async (req, res) => {
   try {
-    const data = await Journey.aggregate([
-      {
-        $group: {
-          _id: {
-            year: { $year: "$tap_in_time" },
-            month: { $month: "$tap_in_time" }
-          },
-          count: { $sum: 1 }
+    const range = req.query.range || "monthly";
+
+    let groupStage;
+
+    if (range === "weekly") {
+      groupStage = {
+        _id: {
+          year: { $year: "$tap_in_time" },
+          week: { $week: "$tap_in_time" }
         }
-      },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 7 }
+      };
+    } else {
+      groupStage = {
+        _id: {
+          year: { $year: "$tap_in_time" },
+          month: { $month: "$tap_in_time" }
+        }
+      };
+    }
+
+    const data = await Journey.aggregate([
+      { $group: { ...groupStage, count: { $sum: 1 } } },
+      { $sort: { "_id.year": 1 } },
+      { $limit: 8 }
     ]);
 
     const formatted = data.map(d => ({
-      name: `${d._id.month}/${d._id.year}`,
+      name:
+        range === "weekly"
+          ? `W${d._id.week} ${d._id.year}`
+          : `${d._id.month}/${d._id.year}`,
       value: d.count
     }));
 
     res.json(formatted);
+
   } catch (err) {
     console.error("USAGE ERROR:", err);
     res.status(500).json({ error: err.message });

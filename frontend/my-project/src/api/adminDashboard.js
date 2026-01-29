@@ -10,3 +10,15 @@ export async function fetchDashboardOverview(token) {
   if (!res.ok) throw new Error("Failed to fetch dashboard data");
   return res.json();
 }
+
+export async function fetchDashboardUsage(token, range) {
+  const res = await fetch(`${API}/api/admin/dashboard/usage?range=${range}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch usage data");
+  return res.json();
+}
+

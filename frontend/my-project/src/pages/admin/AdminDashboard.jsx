@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { fetchDashboardOverview } from "../../api/adminDashboard";
-
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { fetchDashboardOverview , fetchDashboardUsage } from "../../api/adminDashboard";
+import { LineChart,Line, XAxis,YAxis, Tooltip, ResponsiveContainer, } from "recharts";
 
 /* ---------------- MOCK DATA ---------------- */
 
-const chartData = [
-  { name: "Jan", value: 18 },
-  { name: "Feb", value: 25 },
-  { name: "Mar", value: 14 },
-  { name: "Apr", value: 10 },
-  { name: "May", value: 22 },
-  { name: "Jun", value: 30 },
-  { name: "Jul", value: 26 },
-];
+// const chartData = [
+//   { name: "Jan", value: 18 },
+//   { name: "Feb", value: 25 },
+//   { name: "Mar", value: 14 },
+//   { name: "Apr", value: 10 },
+//   { name: "May", value: 22 },
+//   { name: "Jun", value: 30 },
+//   { name: "Jul", value: 26 },
+// ];
 
 /* ---------------- REUSABLE COMPONENTS ---------------- */
 
@@ -116,13 +108,35 @@ const AdminDashboard = () => {
   const [theme, setTheme] = useState("light");
   const isDark = theme === "dark";
   const [stats, setStats] = useState(null);
+  const [usageData, setUsageData] = useState([]);
+  const [range, setRange] = useState("monthly");
+const [loading, setLoading] = useState(true);
+
 const adminToken = localStorage.getItem("adminToken"); 
 
 useEffect(() => {
-  fetchDashboardOverview(adminToken)
-    .then(setStats)
-    .catch(err => console.error(err));
-}, []);
+  if (!adminToken) return;
+
+  const loadDashboard = async () => {
+    try {
+      setLoading(true);
+
+      const overview = await fetchDashboardOverview(adminToken);
+      const usage = await fetchDashboardUsage(adminToken , range);
+
+      setStats(overview);
+      setUsageData(usage);
+
+    } catch (err) {
+      console.error("Dashboard error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadDashboard();
+}, [adminToken , range]);
+
 
 
 
@@ -200,23 +214,25 @@ useEffect(() => {
 
         {/* ================= ROW 1 ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-         <KPI
+
+            <KPI
   title="Total Routes"
-  value={stats ? stats.totalRoutes : "—"}
+  value={loading ? "..." : stats?.totalRoutes}
   isDark={isDark}
 />
 
 <KPI
   title="Active Buses"
-  value={stats ? stats.totalBuses : "—"}
+  value={loading ? "..." : stats?.totalBuses}
   isDark={isDark}
 />
 
 <KPI
   title="Revenue Today"
-  value={stats ? `₹${stats.revenueToday}` : "—"}
+  value={loading ? "..." : `₹${stats?.revenueToday}`}
   isDark={isDark}
 />
+
 
 
           <Card isDark={isDark}>
@@ -247,9 +263,37 @@ useEffect(() => {
 
   {/* 2/3 width chart */}
   <Card isDark={isDark} className="lg:col-span-2">
-    <h3 className="font-semibold mb-4">Network Usage</h3>
+   <div className="flex justify-between items-center mb-4">
+  <h3 className="font-semibold">Network Usage</h3>
+
+  <div className="flex gap-2 text-sm">
+    <button
+      onClick={() => setRange("weekly")}
+      className={`px-3 py-1 rounded-lg ${
+        range === "weekly"
+          ? "bg-indigo-500 text-white"
+          : "bg-white"
+      }`}
+    >
+      Weekly
+    </button>
+
+    <button
+      onClick={() => setRange("monthly")}
+      className={`px-3 py-1 rounded-lg ${
+        range === "monthly"
+          ? "bg-indigo-500 text-white"
+          : "bg-white"
+      }`}
+    >
+      Monthly
+    </button>
+  </div>
+</div>
+
     <ResponsiveContainer width="100%" height={280}>
-      <LineChart data={chartData}>
+    <LineChart data={usageData}>
+
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
