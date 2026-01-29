@@ -261,7 +261,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
-      transition={{ type: "spring", stiffness: 40 }}
+      transition={{ duration: 0.35,ease: [0.22, 1, 0.36, 1]}}
       className="absolute right-0 top-0 h-full w-[85%] max-w-sm
                  bg-gradient-to-b from-black/90 to-black/70
                  backdrop-blur-xl border-l border-white/10
