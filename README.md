@@ -38,3 +38,4 @@ Mobizee aims to:
 - Provide a clean, scalable, and mobile-first user experience  
 
 
+npm install bcryptjs

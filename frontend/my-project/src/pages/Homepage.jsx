@@ -25,10 +25,7 @@ function Homepage({user}) {
   }
 }, []);
 
-// mobMagic Card
-const navigateToNfcCard = () => {
-  navigate("/nfcCard"); // path to your NFC card page
-};
+
 
   return (
     <div >

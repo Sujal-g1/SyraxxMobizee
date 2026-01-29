@@ -7,15 +7,30 @@ import { GrLanguage } from "react-icons/gr";
 import { GoAlertFill } from "react-icons/go";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import Wallet from "../pages/Wallet.jsx";
- 
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion'
 import ThemeToggle from "../pages/ThemeToggle.jsx";
+import { FiLogOut } from "react-icons/fi";
+
 
 const Navbar = ({user}) => {
 
     const navigate = useNavigate();
+
+    const [showUserMenu, setShowUserMenu] = useState(false);
+
+const handleLogout = () => {
+  // clear auth/session storage
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+
+  setShowUserMenu(false);
+  setIsMenuOpen(false);
+
+  navigate("/"); 
+};
+
 
     // live location code 
 
@@ -194,17 +209,29 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
             </button>
     
                {/* user */}
-              <button className="bg-white text-black px-5 py-2 flex items-center gap-1 text-lg rounded-lg
-                                 border hover:bg-black hover:text-white
-                                transition-all duration-300 ease-in-out ">
-                     <FaUser /> {user ? user.firstName : "Guest"}
-            </button>
+             
+             <div className="relative">
+  <button
+    onClick={() => setShowUserMenu(prev => !prev)}
+    className="bg-white text-black px-5 py-2 flex items-center gap-1 text-lg rounded-lg
+               border hover:bg-black hover:text-white
+               transition-all duration-300 ease-in-out"
+  >
+    <FaUser /> {user ? user.firstName : "Guest"}
+  </button>
+
+  {showUserMenu && (
+    <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-xl z-[120] overflow-hidden">
+    </div>
+  )}
+</div>
+
     
             </div>
 
             {/* MOBILE MENU ICON */}
             <div className="lg:hidden flex items-center">
-          <button onClick={toggleMenu} className="text-3xl">
+          <button onClick={toggleMenu} className="text-2xl">
             {isMenuOpen ? <RxCross2 /> : <RxHamburgerMenu />}
           </button>
         </div>
@@ -229,6 +256,8 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                     <FaUser size={30} />
                 </div>
                 <span className="font-semibold">{user ? user.firstName : "Guest"}</span>
+              
+
             </div>
 
             {/* mobMagic card */}
@@ -248,6 +277,13 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
             <div className="flex items-center gap-4 text-green-500 border border-green-500 px-6 py-2 rounded-full">
                 <MdStars /> {greenPoints} Points
             </div>
+
+             <button 
+            onClick={handleLogout}
+            className="text-white hover:text-red-600 text-xl flex items-center gap-2 border px-6 py-2 rounded-full">
+              <FiLogOut />
+              Logout
+            </button>
         </div>
       </div>
     

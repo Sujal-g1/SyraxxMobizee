@@ -41,7 +41,7 @@ const API = import.meta.env.VITE_API_URL;
       localStorage.setItem("token", data.token);
 
       setUser(data.user); // Store user data in parent state or context
-      navigate("/Homepage"); // Redirect after successful login
+      navigate("/homepage"); // Redirect after successful login
     } catch (err) {
       setError("Server error. Please try again later.");
       console.error(err);
@@ -71,7 +71,7 @@ const handleGoogleLogin = async () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
-      navigate("/Homepage");
+      navigate("/homepage");
     }
   } catch (error) {
     console.error("Google Login Error:", error);
@@ -99,7 +99,7 @@ const handleGoogleLogin = async () => {
 
           <p className="text-gray-500 mb-6">Enter your email and password to access your account</p>
   
-          {/* <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-lg mb-2 font-bold text-gray-600">Email</label>
               <input
@@ -141,7 +141,7 @@ const handleGoogleLogin = async () => {
               hover:bg-white hover:text-black  duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
               Sign in
             </button>
-          </form> */}
+          </form>
 
           <button
             type="button"
@@ -155,14 +155,11 @@ const handleGoogleLogin = async () => {
             Sign in with Google
           </button>
 
-         <p className="mt-5">this model is under construction , right now we are signing with google only for testing</p>
-{/* 
-          <p className="text-sm text-gray-500 text-center mt-6">
-            Don’t have an account?{" "}
-            <Link to="/login/Signup" className="text-indigo-600 font-semibold hover:underline">
-              Sign up
-            </Link>
-          </p> */}
+         {/* <p className="mt-5">this model is under construction , right now we are signing with google only for testing</p> */}
+
+          <p className="text-sm text-gray-500 text-center mt-6 ">
+            Don't have an account?{" "} <a onClick={handleGoogleLogin} className="text-indigo-600 cursor-pointer">Sign up</a>
+          </p> 
           
         </div>
       </div>

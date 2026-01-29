@@ -12,7 +12,7 @@ const Start = () => {
   const token = localStorage.getItem("token");
 
   if (token) {
-    navigate("/Homepage");
+    navigate("/homepage");
   } else {
     navigate("/login");
   }

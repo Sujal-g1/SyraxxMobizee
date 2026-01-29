@@ -7,7 +7,6 @@ import UserSignup from './pages/UserSignup';
 import Homepage from './pages/Homepage';
 import NfcCard from './pages/NfcCard';
 import LiveStatus from './pages/LiveStatus';
-import Dashboard from './pages/Dashboard';  
 import BusInfo from "./pages/BusInfo"; 
 import Reserve from "./pages/Reserve";
 import PanicButton from "./pages/PanicButton";
@@ -15,8 +14,6 @@ import RouteSearch from "./pages/RouteSearch";
 import Wallet from "./pages/Wallet";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
-
 
 import "leaflet/dist/leaflet.css";
 
@@ -72,18 +69,17 @@ const ProtectedRoute = ({ user,  loading, children }) => {
           <Route path='/login' element={<Login setUser={setUser} />} />
           {/* <Route path='/login/signup' element={<UserSignup />} /> */}
          <Route
-  path="/Homepage"
+  path="/homepage"
   element={
     <ProtectedRoute user={user} loading={loading}>
       <Homepage user={user} />
     </ProtectedRoute>
   }
 />        <Route path='/live' element={<LiveStatus />} />
-          <Route path="/nfcCard" element={<NfcCard user={user} setUser={setUser} />} />
-          <Route path='/dashboard' element={<Dashboard />} />  
-          <Route path="/businfo" element={<BusInfo />} />
+          <Route path="/nfccard" element={<NfcCard user={user} setUser={setUser} />} /> 
+          <Route path="/businfo" element={<BusInfo user={user}/>} />
          <Route path="/reserve" element={<Reserve />} />
-         <Route path="/panic" element={<PanicButton />} />
+         <Route path="/panic" element={<PanicButton user={user}/>} />
          <Route path="/wallet" element={<Wallet user={user} refreshUser={setUser} />} />
          <Route path="/routesearch" element={<RouteSearch />} />
          <Route path="/admin/login" element={<AdminLogin />} />

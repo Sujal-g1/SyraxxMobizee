@@ -2,6 +2,7 @@ import React, { useState, useRef , useEffect } from "react";
 import hornSound from "../assets/horn.mp3";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { motion } from 'framer-motion'
 
 const PanicButton = ({user}) => {
   const [pressCount, setPressCount] = useState(0);
@@ -70,7 +71,7 @@ const PanicButton = ({user}) => {
   }
 
   // ⏩ Redirect back to trigger page
-  navigate("/Homepage"); // change this route if needed
+  navigate("/homepage"); // change this route if needed
 };
 
  
@@ -88,8 +89,15 @@ const PanicButton = ({user}) => {
 
     <Navbar user={user}/>
 
-    <div
-      className={`min-h-screen flex items-center justify-center px-4 transition-colors duration-500
+    <motion.div
+     initial={{y:50}}
+    animate={{y:0}}
+    transition={{
+      delay:0.5,
+      duration: 1.2,
+          ease: [0.16, 1, 0.3, 1], 
+    }}
+      className={`min-h-screen flex items-center justify-center px-4 transition-colors duration-500 overflow-scroll
       ${isPanic ? "bg-red-100" : "bg-gray-200"}`}
     >
       <div
@@ -161,7 +169,7 @@ const PanicButton = ({user}) => {
 
         <audio ref={audioRef} src={hornSound} />
       </div>
-    </div>
+    </motion.div>
     </>
   );
 };
