@@ -288,6 +288,28 @@ localStorage.setItem("user", JSON.stringify(updatedUser));
 
   if (!user) return null;
 
+
+  const stats = history.reduce(
+  (acc, j) => {
+    acc.trips += 1;
+    acc.km += j.distance_km || 0;
+    acc.fare += j.fare || 0;
+    return acc;
+  },
+  { trips: 0, km: 0, fare: 0 }
+);
+
+stats.avg = stats.trips
+  ? (stats.km / stats.trips).toFixed(1)
+  : 0;
+const weekly = Array(7).fill(0);
+
+history.forEach((j) => {
+  const d = new Date(j.ended_at).getDay();
+  weekly[d] += j.fare || 0;
+});
+
+
   return (
     <>
       <Navbar user={user} />
@@ -565,6 +587,48 @@ localStorage.setItem("user", JSON.stringify(updatedUser));
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-2xl p-5 shadow"
               >
+                {/* 📊 Stats dashboard */}
+<div className="grid grid-cols-2 gap-3 mb-4">
+
+  <div className="bg-gray-50 rounded-xl p-3 text-center shadow">
+    <p className="text-xs text-gray-500">Trips</p>
+    <p className="text-lg font-bold">{stats.trips}</p>
+  </div>
+
+  <div className="bg-gray-50 rounded-xl p-3 text-center shadow">
+    <p className="text-xs text-gray-500">Distance</p>
+    <p className="text-lg font-bold">{stats.km} km</p>
+  </div>
+
+  <div className="bg-gray-50 rounded-xl p-3 text-center shadow">
+    <p className="text-xs text-gray-500">Spent</p>
+    <p className="text-lg font-bold">₹{stats.fare}</p>
+  </div>
+
+  <div className="bg-gray-50 rounded-xl p-3 text-center shadow">
+    <p className="text-xs text-gray-500">Avg Ride</p>
+    <p className="text-lg font-bold">{stats.avg} km</p>
+  </div>
+
+</div>
+
+{/* 📈 Weekly spend chart */}
+<div className="bg-gray-50 rounded-xl p-3 mb-4 shadow">
+  <p className="text-xs text-gray-500 mb-2">Weekly Spend</p>
+
+  <div className="flex items-end gap-2 h-20">
+    {weekly.map((v, i) => (
+      <div
+        key={i}
+        className="flex-1 bg-black rounded-t"
+        style={{
+          height: `${Math.max(v, 5)}%`
+        }}
+      />
+    ))}
+  </div>
+</div>
+
                 <h3 className="font-semibold text-gray-800 mb-4">Journey History</h3>
 
                 <div className="space-y-3 max-h-80 overflow-y-auto">
