@@ -39,3 +39,5 @@ Mobizee aims to:
 
 
 npm install bcryptjs
+
+npm install qrcode.react

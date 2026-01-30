@@ -9,6 +9,8 @@ const routeBuses = require("./routes/routeBuses");
 const adminAuthRoutes = require("./routes/admin/adminAuth.routes");
 const adminDashboardRoutes = require("./routes/admin/dashboard.routes");
 
+const reservationRoutes = require("./routes/reservationRoutes");
+
 
 const app = express();
 
@@ -50,9 +52,9 @@ app.use("/api/routes", routeBuses);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 
-
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));
 
+app.use("/api/reservation", reservationRoutes);
 
 // Start Server
 // const PORT = process.env.PORT || 5001;
