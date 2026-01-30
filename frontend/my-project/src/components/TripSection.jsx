@@ -124,6 +124,7 @@ const TripSection = () => {
 
               {/* Primary CTA */}
               <button
+              onClick={handleBookNow}
                 className="mt-2 w-full sm:w-1/2 bg-white text-black py-3 rounded-lg
                            font-semibold hover:bg-gray-100 transition-colors duration-200"
               >

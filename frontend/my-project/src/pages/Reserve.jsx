@@ -99,13 +99,13 @@ export default function Reserve({ user: propUser }) {
           <div className="flex bg-slate-200/50 p-1 rounded-xl">
              <button 
               onClick={() => setTab("book")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${tab === "book" ? "bg-white shadow-sm text-indigo-600" : "text-slate-500"}`}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${tab === "book" ? "bg-white shadow-sm text-black" : "text-slate-500"}`}
              >
                Book
              </button>
              <button 
               onClick={() => setTab("history")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${tab === "history" ? "bg-white shadow-sm text-indigo-600" : "text-slate-500"}`}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${tab === "history" ? "bg-white shadow-sm text-black" : "text-slate-500"}`}
              >
                History
              </button>
@@ -118,7 +118,7 @@ export default function Reserve({ user: propUser }) {
               {/* Trip Type Switcher */}
               <div className="bg-slate-200/50 p-1.5 rounded-2xl flex gap-1">
                 {[{ id: "oneway", label: "One Way", icon: <ChevronRight size={16} /> }, { id: "roundtrip", label: "Round Trip", icon: <ArrowRightLeft size={16} /> }].map((t) => (
-                  <button key={t.id} onClick={() => setTripType(t.id)} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${tripType === t.id ? "bg-white shadow-sm text-indigo-600" : "text-slate-500 hover:text-slate-700"}`}>
+                  <button key={t.id} onClick={() => setTripType(t.id)} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${tripType === t.id ? "bg-white shadow-sm text-black" : "text-slate-500 hover:text-slate-700"}`}>
                     {t.icon} {t.label}
                   </button>
                 ))}
@@ -163,7 +163,7 @@ export default function Reserve({ user: propUser }) {
                     <button key={type} onClick={() => setForm({ ...form, bookingType: type })} className={`flex-1 py-3 rounded-xl capitalize font-bold text-sm transition-all ${form.bookingType === type ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}>{type}</button>
                   ))}
                 </div>
-                <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={handleSearch} disabled={loading} className="w-full mt-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2">
+                <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={handleSearch} disabled={loading} className="w-full mt-8 py-4 bg-black hover:bg-gray-800 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2">
                   {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Find Available Buses"}
                 </motion.button>
               </div>
