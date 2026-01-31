@@ -43,3 +43,5 @@ npm install bcryptjs
 npm install qrcode.react
 
 npm install nodemailer mongoose express dotenv
+
+npm install canvas-confetti - celebration effect

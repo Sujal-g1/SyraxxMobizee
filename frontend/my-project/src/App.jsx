@@ -20,6 +20,7 @@ import "leaflet/dist/leaflet.css";
 import { I18nextProvider } from 'react-i18next';
 import i18n from './pages/multiLang';
 import DriverAlcohol from './pages/DriverAlcohol';
+import GreenPointsPage from './pages/GreenPointsPage';
 
 
 const App = () => {
@@ -112,6 +113,8 @@ const ProtectedRoute = ({ user,  loading, children }) => {
          <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="driver-alcohol" element={<DriverAlcohol />}/>
+        <Route path="green-points" element={<GreenPointsPage />}/>
+
 
         </Routes>
       </I18nextProvider>

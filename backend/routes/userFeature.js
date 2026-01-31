@@ -645,21 +645,22 @@ const transporter = nodemailer.createTransport({
 });
 
 // 2. ROUTE: Save Emergency Contacts
-// 2. ROUTE: Save Emergency Contacts
 router.post("/emergency/save", async (req, res) => {
-  const { userId, emails } = req.body; // In your React code, you sent user._id as userId
+  const { userId, emails } = req.body; // userId here is actually the MongoDB _id from frontend
   try {
     const user = await User.findByIdAndUpdate(
-      userId, // Change this to find by the MongoDB _id
-      { emergencyEmails: emails.filter(e => e !== "") }, // Clean out empty strings
+      userId, // Use findById because we are passing the MongoDB _id
+      { emergencyEmails: emails.filter(e => e !== "") },
       { new: true }
     );
-    
-    if (!user) return res.status(404).json({ error: "User not found" });
-    
+
+    if (!user) {
+        return res.status(404).json({ error: "User record not found in database" });
+    }
+
     res.json({ success: true, emails: user.emergencyEmails });
   } catch (err) {
-    console.error(err);
+    console.error("Save Error:", err);
     res.status(500).json({ error: "Failed to save contacts" });
   }
 });

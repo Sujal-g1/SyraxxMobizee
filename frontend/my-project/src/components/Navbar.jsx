@@ -116,9 +116,7 @@ const [showLangOptions, setShowLangOptions] = useState(false);
 };
 
 // wallet
-
 const [showWallet, setShowWallet] = useState(false);
-
 const handleWalletClick = () => {
     navigate("/wallet");
 };
@@ -134,6 +132,9 @@ useEffect(() => {
   return () => document.removeEventListener("mousedown", handleClickOutside);
 }, []);
 
+const handleGreen = ()=>{
+  navigate("/green-points")
+}
 
   return (
     <>
@@ -221,7 +222,8 @@ useEffect(() => {
             </button>
     
               {/* green points */}
-            <button  
+            <button 
+            onClick={handleGreen} 
               className="text-white px-4 py-1  flex items-center gap-1 text-lg rounded-lg 
               hover:text-green-500 hover:border hover:scale-120
               transition-all duration-300 ease-in-out ">

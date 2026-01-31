@@ -236,8 +236,6 @@ const handleSeeRoute = () => {
     
             </div>
     
-    
-    
             {/* Right side - illustration */}
             <motion.div 
             initial={{y:80}}
@@ -253,6 +251,7 @@ const handleSeeRoute = () => {
                 alt="Car Illustration"
                 className="w-full max-w-[600px] rounded-2xl"
               />
+              
             </motion.div>
           </section>
     </>
