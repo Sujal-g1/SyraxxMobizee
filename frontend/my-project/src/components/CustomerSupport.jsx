@@ -6,14 +6,14 @@ const CustomerSupport = () => {
   const [showAll, setShowAll] = useState(false);
 
   const features = [
-    { title: "Free Cancellation", key: "Free_Cancel" },
-    { title: "Flexi Ticket", key: "adjustable" },
-    { title: "Earn Rewards", key: "Earn_Rewards" },
-    { title: "Booking for Women", key: "Book_Women" },
-    { title: "Primo Services", key: "customer_Supp" },
-    { title: "24/7 Customer Support", key: "Tracking" },
-    { title: "Instant Refund", key: "Green_Points" },
-    { title: "Live Bus Tracking", key: "Nearby_Bus" },
+    { title: "FreeCancellation", key: "Free_Cancel" },
+    { title: "FlexiTicket", key: "adjustable" },
+    { title: "EarnRewards", key: "Earn_Rewards" },
+    { title: "BookingForWomen", key: "Book_Women" },
+    { title: "PrimoServices", key: "customer_Supp" },
+    { title: "24/7CustomerSupport", key: "Tracking" },
+    { title: "InstantRefund", key: "Green_Points" },
+    { title: "LiveBusTracking", key: "Nearby_Bus" },
   ];
 
   const visibleFeatures = showAll ? features : features.slice(0, 4);
@@ -52,7 +52,7 @@ const CustomerSupport = () => {
 
               {/* Title */}
               <h3 className="font-semibold text-gray-900 text-lg">
-                {item.title}
+                {t(item.title)}
               </h3>
 
               {/* Description */}

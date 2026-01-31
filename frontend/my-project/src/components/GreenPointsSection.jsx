@@ -118,7 +118,7 @@ const GreenPointsSection = () => {
             >
               {/* Label */}
               <p className="text-sm font-semibold tracking-wide text-green-600 mb-2">
-                ECO REWARDS
+                {t("ecoReward")}
               </p>
 
               {/* Heading */}
@@ -128,8 +128,7 @@ const GreenPointsSection = () => {
 
               {/* Description */}
               <p className="text-gray-600 mb-8 max-w-md">
-                Earn rewards every time you travel green. Redeem points for tickets,
-                vouchers and exclusive benefits.
+                {t("earnreward")}
               </p>
 
               {/* Benefits Grid */}

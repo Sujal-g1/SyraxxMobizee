@@ -152,7 +152,7 @@ const handleGreen = ()=>{
         <div className="flex items-center gap-3 max-w-[70%] overflow-visible">
             <h1 
             onClick={()=> navigate("/Homepage")}
-            className="text-xl md:text-2xl font-semibold tracking-wide">Mobizee</h1> 
+            className="text-xl md:text-2xl font-semibold tracking-wide">{t("Mobizee")}</h1> 
 
          <div className="flex items-center gap-2  md:ml-7">
         {/* location */}

@@ -126,7 +126,7 @@ const handleSeeRoute = () => {
                   after:bg-gradient-to-r after:from-orange-500 after:via-white after:to-green-500
                   after:scale-x-0 after:origin-left hover:after:scale-x-100
                   after:transition-transform after:duration-300"> 
-                  enable your <span className="font-semibold ">MobMagic Card</span></span>
+                  {t("enable")} <span className="font-semibold ">{t("card")}</span></span>
                    </button>
                    </div>  
     

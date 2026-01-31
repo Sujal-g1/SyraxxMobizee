@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Leaf, Flame, Zap, CreditCard, Car, MapPin, X, Award, Download, Share2, Globe, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import Navbar from '../components/Navbar';
 
-const GreenPointsPage = () => {
+const GreenPointsPage = ({user , setUser}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fadeIn = {
@@ -40,6 +41,8 @@ const GreenPointsPage = () => {
   ];
 
   return (
+    <>
+    <Navbar user={user}/>
     <div className="min-h-screen bg-green-200 text-slate-800 font-sans selection:bg-emerald-100">
       
       {/* Hero Section */}
@@ -191,6 +194,7 @@ const GreenPointsPage = () => {
       </AnimatePresence>
 
     </div>
+    </>
   );
 };
 

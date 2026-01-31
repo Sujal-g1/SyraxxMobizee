@@ -105,7 +105,7 @@ const TripSection = () => {
             {/* Content */}
             <div className="relative z-10 p-8 md:p-10 text-white max-w-xl flex flex-col gap-6">
               <p className="text-sm font-semibold tracking-wide text-green-300">
-                PREMIUM GOVERNMENT BUSES
+                {t("premGOV")}
               </p>
 
               <h2 className="text-2xl md:text-3xl font-bold leading-tight">
@@ -128,7 +128,7 @@ const TripSection = () => {
                 className="mt-2 w-full sm:w-1/2 bg-white text-black py-3 rounded-lg
                            font-semibold hover:bg-gray-100 transition-colors duration-200"
               >
-                Next
+                {t("next")}
               </button>
             </div>
           </div>
@@ -163,7 +163,7 @@ const TripSection = () => {
               >
                 {/* Heading */}
                 <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                  ✨ Benefits
+                  ✨ {t("benefits")}
                 </h3>
 
                 {/* Benefits List */}
@@ -173,7 +173,7 @@ const TripSection = () => {
                       📅
                     </span>
                     <span className="leading-relaxed">
-                      Choose your exact pickup time up to 15 days in advance.
+                       {t("advance")} 
                     </span>
                   </li>
 
@@ -182,7 +182,7 @@ const TripSection = () => {
                       ⏰
                     </span>
                     <span className="leading-relaxed">
-                      Extra wait time included to meet your ride.
+                      {t("wait")} 
                     </span>
                   </li>
 
@@ -191,7 +191,7 @@ const TripSection = () => {
                       ℹ️
                     </span>
                     <span className="leading-relaxed">
-                      Cancel at low charge up to 2 days in advance.
+                      {t("low")} 
                     </span>
                   </li>
                 </ul>
@@ -204,7 +204,7 @@ const TripSection = () => {
                              border border-gray-300 text-gray-900
                              hover:bg-gray-100 transition-colors duration-200"
                 >
-                  Book Now
+                  {t("book now")} 
                 </button>
               </div>
             </div>

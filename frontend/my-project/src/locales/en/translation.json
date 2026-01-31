@@ -6,17 +6,22 @@
   "see_route" :"See Route",
   "see_buses" : "See Buses",
 
-
+"Mobizee":"Mobizee",
+"enable":"enable your",
 "Offers":"Grab the Offers ",
 "Trip":"Fuel the fun—book your family bus adventure today!",
 "Trip1": "More easy to Travel with family",
 "Customer_Support":"Customer Support",
 "E-Tickets":"How to generate MobMagic Card?",
-
+"next":"Next",
 "Carbon":"Contribute in Making India Carbon Neutral",
-
-
-
+"premGOV":"PREMIUM GOVERNMENT BUSES",
+"ecoReward":"ECO REWARDS",
+"earnreward":"Earn rewards every time you travel green. Redeem points for tickets, vouchers and exclusive benefits.",
+"card":"MobMagic Card",
+"benefits":"Benefits",
+"advance":"Choose your exact pickup time up to 15 days in advance.",
+"wait":"Extra wait time included to meet your ride.",
 "Free_Cancel" : "Zero-Stress Booking. Cancel your ticket at no extra cost if your plans change.",
 "adjustable" : "Total Flexibility. Easily modify your departure time or date to fit your schedule.",
 "Earn_Rewards" : "Loyalty Pays Off. Accumulate reward points every time you ride and redeem them for free trips.",
@@ -26,7 +31,8 @@
 "Green_Points": "Earn points on every booking! Whether it's an Electric or Express bus, every seat helps the planet. Redeem points for instant discounts on your next trip.",
 "Nearby_Bus": "Never miss a ride. View all buses near your current location in real-time and plan your walk to the stop perfectly.",
 
-
+"low":"Cancel at low charge up to 2 days in advance.",
+"book now":"Book Now",
 
 
 
@@ -47,12 +53,19 @@
 "Payment":"Verify and submit all the details to link your card.",
 "online_ticket":"You will receive a unique ID; add it to your phone's NFC settings.",
 "Ticket":"Your card is ready! Enjoy seamless connectivity on every trip.",
-"Check_in": "Simply tap your phone at the bus gate to board instantly."
+"Check_in": "Simply tap your phone at the bus gate to board instantly.",
 
 
 
 
-
+"FreeCancellation" : "Free Cancellation",
+"FlexiTicket" :     "Flexible Ticket",
+"EarnReward" :      "Earns Reward",
+"BookingforWomen" : "Booking for Women",
+"PrimoServices" :    "Prime Services",
+"24/7CustomerSupport" : "24/7 Customer Support",
+"InstantRefund" :      "Instant Refund",
+"LivebusTracking" : "Live Bus Tracking" 
 
 
 

@@ -113,7 +113,7 @@ const ProtectedRoute = ({ user,  loading, children }) => {
          <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="driver-alcohol" element={<DriverAlcohol />}/>
-        <Route path="green-points" element={<GreenPointsPage />}/>
+        <Route path="green-points" element={<GreenPointsPage user={user} setUser={setUser}/>}/>
 
 
         </Routes>
