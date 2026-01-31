@@ -36,7 +36,6 @@ export default function CreateWallet({ user, refreshUser }) {
       setTimeout(async () => {
         await refreshUser();
       }, 1500);
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -47,7 +46,6 @@ export default function CreateWallet({ user, refreshUser }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="bg-white rounded-2xl shadow p-6 w-full max-w-sm text-center space-y-4">
-
         {/* STEP 1 — FORM */}
         {step === "form" && (
           <>
@@ -84,9 +82,7 @@ export default function CreateWallet({ user, refreshUser }) {
           <>
             <h1 className="text-lg font-semibold">Confirm UPI</h1>
 
-            <p className="text-gray-600 text-sm">
-              Wallet will be linked to:
-            </p>
+            <p className="text-gray-600 text-sm">Wallet will be linked to:</p>
 
             <p className="font-bold">{upi}</p>
 

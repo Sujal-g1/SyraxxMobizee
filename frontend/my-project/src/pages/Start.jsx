@@ -1,23 +1,22 @@
-import React from 'react'
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import algomaniaX from '../assets/bus2.svg'
-import firstpage2_blur from '../assets/firstpage2_blur.png'
+import algomaniaX from "../assets/bus2.svg";
+import firstpage2_blur from "../assets/firstpage2_blur.png";
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from "lucide-react";
 
 const Start = () => {
   const navigate = useNavigate();
 
- const handleContinue = () => {
-  const token = localStorage.getItem("token");
+  const handleContinue = () => {
+    const token = localStorage.getItem("token");
 
-  if (token) {
-    navigate("/homepage");
-  } else {
-    navigate("/login");
-  }
-};
-
+    if (token) {
+      navigate("/homepage");
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="min-h-screen w-full">
@@ -26,7 +25,6 @@ const Start = () => {
         className="min-h-screen w-full flex flex-col justify-between bg-cover bg-center"
         style={{ backgroundImage: `url(${firstpage2_blur})` }}
       >
-
         {/* Logo Section */}
         <div className="w-full flex flex-col items-center mt-18 sm:mt-10 animate-bounceUp px-4">
           <div className="p-4 sm:p-5 rounded-2xl bg-white/40 shadow-lg">
@@ -56,13 +54,12 @@ const Start = () => {
                        transition hover:scale-105"
           >
             Continue
-          <ArrowRight className='w-15 h-10 font-bold'/>
+            <ArrowRight className="w-15 h-10 font-bold" />
           </button>
         </div>
-
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Start;

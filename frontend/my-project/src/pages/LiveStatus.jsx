@@ -65,7 +65,7 @@ const LiveStatus = () => {
           const latLngs = route.stops.map((s) => [s.lat, s.lng]);
 
           L.polyline(latLngs, {
-            color: "#ccc",       // light gray
+            color: "#ccc", // light gray
             weight: 3,
             opacity: 0.6,
             interactive: false, // do not interfere with main route
@@ -120,10 +120,11 @@ const LiveStatus = () => {
 
         L.marker(startLatLng, { icon: greenIcon })
           .addTo(map)
-          .bindTooltip(
-            `<b style="font-size:16px">${resolvedFrom.name}</b>`,
-            { permanent: true, direction: "top", offset: [0, -10] }
-          );
+          .bindTooltip(`<b style="font-size:16px">${resolvedFrom.name}</b>`, {
+            permanent: true,
+            direction: "top",
+            offset: [0, -10],
+          });
 
         // ---------------------------
         // 6. End marker (big label)
@@ -132,10 +133,11 @@ const LiveStatus = () => {
 
         L.marker(endLatLng, { icon: greenIcon })
           .addTo(map)
-          .bindTooltip(
-            `<b style="font-size:18px">${resolvedTo.name}</b>`,
-            { permanent: true, direction: "top", offset: [0, -10] }
-          );
+          .bindTooltip(`<b style="font-size:18px">${resolvedTo.name}</b>`, {
+            permanent: true,
+            direction: "top",
+            offset: [0, -10],
+          });
 
         // ---------------------------
         // 7. Draw polyline from FINAL path (RED, MAIN ROUTE)
@@ -167,10 +169,11 @@ const LiveStatus = () => {
             fillOpacity: 1,
           })
             .addTo(map)
-            .bindTooltip(
-              `<span style="font-size:11px">${stop.name}</span>`,
-              { permanent: true, direction: "right", offset: [6, 0] }
-            );
+            .bindTooltip(`<span style="font-size:11px">${stop.name}</span>`, {
+              permanent: true,
+              direction: "right",
+              offset: [6, 0],
+            });
         });
 
         // ---------------------------
@@ -193,7 +196,6 @@ const LiveStatus = () => {
     // Cleanup
     // ---------------------------
     return () => {
-
       isMounted = false;
       if (mapRef.current) {
         mapRef.current.remove();

@@ -7,13 +7,13 @@ const CustomerSupport = () => {
 
   const features = [
     { title: "Free Cancellation", key: "Free_Cancel" },
-    { title: "Flexi Ticket", key: "Free_Cancel" },
-    { title: "Earn Rewards", key: "Free_Cancel" },
-    { title: "Booking for Women", key: "Free_Cancel" },
-    { title: "Primo Services", key: "Free_Cancel" },
-    { title: "24/7 Customer Support", key: "Free_Cancel" },
-    { title: "Instant Refund", key: "Free_Cancel" },
-    { title: "Live Bus Tracking", key: "Free_Cancel" },
+    { title: "Flexi Ticket", key: "adjustable" },
+    { title: "Earn Rewards", key: "Earn_Rewards" },
+    { title: "Booking for Women", key: "Book_Women" },
+    { title: "Primo Services", key: "customer_Supp" },
+    { title: "24/7 Customer Support", key: "Tracking" },
+    { title: "Instant Refund", key: "Green_Points" },
+    { title: "Live Bus Tracking", key: "Nearby_Bus" },
   ];
 
   const visibleFeatures = showAll ? features : features.slice(0, 4);

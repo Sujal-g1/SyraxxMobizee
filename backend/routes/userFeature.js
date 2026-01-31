@@ -9,7 +9,7 @@ const Journey = require("../database/models/Journey");
 const Route = require("../database/models/Route");
 const { calculatePathDistance } = require("../utils/distanceCalculator");
 const { calculateFare } = require("../utils/fareCalculator");
-
+const nodemailer = require("nodemailer");
 
 
 // ================================
@@ -629,6 +629,77 @@ router.get("/stations", async (req, res) => {
   } catch (err) {
     console.error("Get stations error:", err);
     res.status(500).json({ error: "Failed to fetch stations" });
+  }
+});
+
+
+// -------------- panic 
+
+// 1. Setup the Email Transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER, // Your Gmail
+    pass: process.env.EMAIL_PASS  // Your 16-character App Password
+  }
+});
+
+// 2. ROUTE: Save Emergency Contacts
+// 2. ROUTE: Save Emergency Contacts
+router.post("/emergency/save", async (req, res) => {
+  const { userId, emails } = req.body; // In your React code, you sent user._id as userId
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId, // Change this to find by the MongoDB _id
+      { emergencyEmails: emails.filter(e => e !== "") }, // Clean out empty strings
+      { new: true }
+    );
+    
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    res.json({ success: true, emails: user.emergencyEmails });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save contacts" });
+  }
+});
+
+// 3. ROUTE: Send Panic Email Alert
+// 3. ROUTE: Send Panic Email Alert
+router.post("/panic", async (req, res) => {
+  const { userId, lat, lon } = req.body;
+  
+  try {
+    // Again, find by MongoDB ID if that's what the frontend is sending
+    const user = await User.findById(userId);
+    
+    if (!user || !user.emergencyEmails || user.emergencyEmails.length === 0) {
+      return res.status(404).json({ error: "No emergency contacts found." });
+    }
+
+    // Fixed the Map Link Template Literal (removed the '0' and fixed brackets)
+    const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+
+    const mailOptions = {
+      from: `"Emergency Alert System" <${process.env.EMAIL_USER}>`,
+      to: user.emergencyEmails.join(", "), 
+      subject: "🚨 URGENT: EMERGENCY ALERT 🚨",
+      html: `
+        <div style="font-family: sans-serif; border: 5px solid red; padding: 20px; text-align: center;">
+          <h1 style="color: red;">HELP NEEDED!</h1>
+          <p>An emergency alert has been triggered by <strong>${user.firstName || 'a user'}</strong>.</p>
+          <p>Location coordinates: <strong>${lat}, ${lon}</strong></p>
+          <br>
+          <a href="${mapLink}" style="background-color: red; color: white; padding: 15px 25px; text-decoration: none; font-weight: bold; border-radius: 5px;">VIEW LOCATION ON MAP</a>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Emergency emails sent!" });
+  } catch (err) {
+    console.error("Panic Error:", err);
+    res.status(500).json({ error: "Failed to send alerts." });
   }
 });
 

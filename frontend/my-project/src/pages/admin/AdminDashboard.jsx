@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { fetchDashboardOverview , fetchDashboardUsage } from "../../api/adminDashboard";
 import { LineChart,Line, XAxis,YAxis, Tooltip, ResponsiveContainer, } from "recharts";
 
-/* ---------------- MOCK DATA ---------------- */
-
-// const chartData = [
-//   { name: "Jan", value: 18 },
-//   { name: "Feb", value: 25 },
-//   { name: "Mar", value: 14 },
-//   { name: "Apr", value: 10 },
-//   { name: "May", value: 22 },
-//   { name: "Jun", value: 30 },
-//   { name: "Jul", value: 26 },
-// ];
 
 /* ---------------- REUSABLE COMPONENTS ---------------- */
 
@@ -111,6 +101,35 @@ const AdminDashboard = () => {
   const [usageData, setUsageData] = useState([]);
   const [range, setRange] = useState("monthly");
 const [loading, setLoading] = useState(true);
+const [alcoholData, setAlcoholData] = useState([]);
+const [drunkCount, setDrunkCount] = useState(0);
+
+const drunkAlerts = alcoholData
+  .filter(d => d.status === "DRUNK")
+  .map(d =>
+    `Driver ${d.driverId} failed alcohol test. Ignition locked at ${new Date(d.time).toLocaleTimeString()}`
+  );
+
+
+useEffect(() => {
+  const loadAlcohol = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/alcohol/status`)
+      setAlcoholData(res.data);
+
+      const drunk = res.data.filter(d => d.status === "DRUNK").length;
+      setDrunkCount(drunk);
+
+    } catch (err) {
+      console.error("Alcohol fetch error:", err);
+    }
+  };
+
+  loadAlcohol();
+  const i = setInterval(loadAlcohol, 3000);
+  return () => clearInterval(i);
+}, []);
+
 
 const adminToken = localStorage.getItem("adminToken"); 
 
@@ -257,7 +276,6 @@ useEffect(() => {
           </Card>
         </div>
 
-        {/* ================= ROW 2 ================= */}
       {/* ================= ROW 2 ================= */}
 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -318,8 +336,6 @@ useEffect(() => {
 
 </div>
 
-
-        {/* ================= ROW 3 ================= */}
     {/* ================= ROW 3 ================= */}
 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -345,13 +361,79 @@ useEffect(() => {
 
   {/* 1/3 width alerts */}
   <Card isDark={isDark}>
-    <h3 className="font-semibold mb-4">System Alerts</h3>
-    <Alert text="High load on Delhi routes" isDark={isDark} />
-    <Alert text="Bus maintenance overdue" isDark={isDark} />
-    <Alert text="Payment spike detected" isDark={isDark} />
-  </Card>
+  <h3 className="font-semibold mb-4">System Alerts</h3>
+
+  {/* 🚨 Alcohol safety alerts */}
+  {drunkAlerts.length > 0 ? (
+    drunkAlerts.map((text, i) => (
+      <div
+        key={i}
+        className="rounded-xl px-4 py-3 text-sm mb-2
+                   border border-red-500/40
+                   bg-red-500/10 text-red-500
+                   animate-pulse font-semibold"
+      >
+        🚨 {text}
+      </div>
+    ))
+  ) : (
+    <Alert text="No alcohol violations detected" isDark={isDark} />
+  )}
+
+  {/* normal system alerts */}
+  <Alert text="High load on Delhi routes" isDark={isDark} />
+  <Alert text="Bus maintenance overdue" isDark={isDark} />
+  <Alert text="Payment spike detected" isDark={isDark} />
+</Card>
+
 
 </div>
+
+<div className="grid grid-cols-1 gap-6">
+
+<Card isDark={isDark}>
+  <h3 className="font-semibold mb-4">Alcohol Safety Monitor</h3>
+
+  {drunkCount > 0 && (
+    <div className="mb-4 p-3 rounded-lg bg-red-500/20 text-red-500 font-semibold animate-pulse">
+      🚨 DRUNK DRIVER DETECTED
+    </div>
+  )}
+
+  <table className="w-full text-sm">
+    <thead className="border-b text-slate-500">
+      <tr>
+        <th>Driver</th>
+        <th>Value</th>
+        <th>Status</th>
+        <th>Ignition</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {alcoholData.slice(0, 5).map((d, i) => (
+        <tr key={i} className="border-b border-slate-700">
+          <td>{d.driverId}</td>
+          <td>{d.alcoholValue}</td>
+
+          <td className={d.status === "DRUNK" ? "text-red-500" : "text-green-500"}>
+            {d.status}
+          </td>
+
+          <td className={d.ignition === "LOCKED" ? "text-red-500" : "text-green-500"}>
+            {d.ignition}
+          </td>
+
+          <td>{new Date(d.time).toLocaleTimeString()}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Card>
+
+</div>
+
 
 
       </div>

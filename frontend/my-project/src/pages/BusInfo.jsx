@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
-const BusInfo = ({user}) => {
+const BusInfo = ({ user }) => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,7 +50,7 @@ const BusInfo = ({user}) => {
   // -----------------------
   const sortByTime = (buses) => {
     return [...buses].sort((a, b) =>
-      a.departureTime.localeCompare(b.departureTime)
+      a.departureTime.localeCompare(b.departureTime),
     );
   };
 
@@ -66,11 +66,7 @@ const BusInfo = ({user}) => {
   }
 
   if (error) {
-    return (
-      <div className="p-10 text-center text-red-600 text-lg">
-        {error}
-      </div>
-    );
+    return <div className="p-10 text-center text-red-600 text-lg">{error}</div>;
   }
 
   if (!result || result.type === "none") {
@@ -89,66 +85,65 @@ const BusInfo = ({user}) => {
 
     return (
       <>
-     <Navbar user={user}/>
+        <Navbar user={user} />
 
+        <div className="p-6 max-w-3xl mx-auto">
+          {/* Header */}
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold">
+              {result.from} → {result.to}
+            </h2>
+            <p className="text-gray-500 mt-1">Available direct buses</p>
+          </div>
 
-      <div className="p-6 max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold">
-            {result.from} → {result.to}
-          </h2>
-          <p className="text-gray-500 mt-1">Available direct buses</p>
-        </div>
+          {/* No buses */}
+          {buses.length === 0 && (
+            <p className="text-center text-gray-500">
+              No upcoming buses available on this route.
+            </p>
+          )}
 
-        {/* No buses */}
-        {buses.length === 0 && (
-          <p className="text-center text-gray-500">
-            No upcoming buses available on this route.
-          </p>
-        )}
+          {/* Bus List */}
+          <div className="space-y-4">
+            {buses.map((bus, index) => {
+              const isFirst = index === 0; // earliest bus
 
-        {/* Bus List */}
-        <div className="space-y-4">
-          {buses.map((bus, index) => {
-            const isFirst = index === 0; // earliest bus
-
-            return (
-              <div
-                key={bus._id || index}
-                className={`border rounded-lg p-4 shadow-sm flex justify-between items-center
+              return (
+                <div
+                  key={bus._id || index}
+                  className={`border rounded-lg p-4 shadow-sm flex justify-between items-center
                   ${isFirst ? "border-green-500 bg-green-50" : "border-gray-200"}
                 `}
-              >
-                {/* Left */}
-                <div>
-                  <p className="text-lg font-semibold">
-                    {bus.busNumber}
-                    {isFirst && (
-                      <span className="ml-2 text-sm text-green-600 font-medium">
-                        Earliest
-                      </span>
-                    )}
-                  </p>
+                >
+                  {/* Left */}
+                  <div>
+                    <p className="text-lg font-semibold">
+                      {bus.busNumber}
+                      {isFirst && (
+                        <span className="ml-2 text-sm text-green-600 font-medium">
+                          Earliest
+                        </span>
+                      )}
+                    </p>
 
-                  <p className="text-sm text-gray-600 mt-1">
-                    Departure: <b>{bus.departureTime}</b> &nbsp; | &nbsp;
-                    Arrival: <b>{bus.arrivalTime}</b>
-                  </p>
-                </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Departure: <b>{bus.departureTime}</b> &nbsp; | &nbsp;
+                      Arrival: <b>{bus.arrivalTime}</b>
+                    </p>
+                  </div>
 
-                {/* Right */}
-                <div className="text-right">
-                  <p className="text-lg font-semibold">₹{bus.fare}</p>
-                  <p className="text-sm capitalize text-gray-600">
-                    {bus.comfort}
-                  </p>
+                  {/* Right */}
+                  <div className="text-right">
+                    <p className="text-lg font-semibold">₹{bus.fare}</p>
+                    <p className="text-sm capitalize text-gray-600">
+                      {bus.comfort}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
       </>
     );
   }

@@ -19,6 +19,7 @@ import "leaflet/dist/leaflet.css";
 
 import { I18nextProvider } from 'react-i18next';
 import i18n from './pages/multiLang';
+import DriverAlcohol from './pages/DriverAlcohol';
 
 
 const App = () => {
@@ -110,6 +111,7 @@ const ProtectedRoute = ({ user,  loading, children }) => {
          <Route path="/routesearch" element={<RouteSearch />} />
          <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="driver-alcohol" element={<DriverAlcohol />}/>
 
         </Routes>
       </I18nextProvider>

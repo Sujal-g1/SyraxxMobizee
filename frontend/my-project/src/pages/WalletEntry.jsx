@@ -1,7 +1,6 @@
 import Wallet from "./Wallet";
 import CreateWallet from "./CreateWallet";
 
-
 export default function WalletEntry({ user, refreshUser }) {
   if (!user) return <p>Loading...</p>;
 

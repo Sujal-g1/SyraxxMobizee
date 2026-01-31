@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
-  userId: { type: String, unique: true ,  required: false }, // NOT required — generated automatically
+  userId: { type: String, unique: true ,  required: false }, // generated automatically
   email: { type: String, required: true, unique: true },
 
   phone: { type: String },
@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
 
   firstName: { type: String }, 
   lastName: { type: String }, 
+
+ emergencyEmails: [String],
 
   user_code: { type: String, unique: true, sparse: true }, // cryptographic ID
   wallet_id: { type: String, unique: true, sparse: true }, //  wallet id

@@ -1,4 +1,4 @@
-import React ,{ useState ,useEffect } from "react";
+import React ,{ useState ,useEffect ,useRef } from "react";
 import { FaUser } from "react-icons/fa";
 import { FaWallet } from "react-icons/fa6";
 import { MdStars } from "react-icons/md";
@@ -9,7 +9,7 @@ import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { IoIdCardOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";     // for language change
 import { useNavigate } from "react-router-dom";
-import { motion } from 'framer-motion'
+import { motion,  AnimatePresence} from 'framer-motion'
 import ThemeToggle from "../pages/ThemeToggle.jsx";
 import { FiLogOut } from "react-icons/fi";
 
@@ -19,6 +19,11 @@ const Navbar = ({user}) => {
     const navigate = useNavigate();
 
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+const langRef = useRef(null);
+
 
 const handleLogout = () => {
   // clear auth/session storage
@@ -118,13 +123,22 @@ const handleWalletClick = () => {
     navigate("/wallet");
 };
 
-const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-const [isMenuOpen, setIsMenuOpen] = useState(false);
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (langRef.current && !langRef.current.contains(e.target)) {
+      setShowLangOptions(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
 
   return (
     <>
     {/* Navbar */}
-        <motion.nav className="fixed top-0 left-0 w-full px-6 max-w-full overflow-x-hidden md:px-10 py-4 flex items-center bg-black text-white justify-between z-50 shadow-lg"
+        <motion.nav className="fixed top-0 left-0 w-full px-6 max-w-full overflow-visible  md:px-10 py-4 flex items-center bg-black text-white justify-between z-50 shadow-lg"
          initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{
@@ -134,7 +148,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
         }}>
                
     
-        <div className="flex items-center gap-3 max-w-[70%] overflow-hidden">
+        <div className="flex items-center gap-3 max-w-[70%] overflow-visible">
             <h1 
             onClick={()=> navigate("/Homepage")}
             className="text-xl md:text-2xl font-semibold tracking-wide">Mobizee</h1> 
@@ -151,27 +165,43 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
         </div>
     
          {/* // multilanguage */}
-        <div className="relative">
-      <button  
-        onClick={() => setShowLangOptions(prev => !prev)}
-        className="text-white px-4 py-2 flex items-center gap-3 text-xl md:text-2xl hover:text-green-500 transition-colors">
-        <GrLanguage />
-      </button>
-    
-     {showLangOptions && (
-              <div className="absolute left-0 mt-2 w-32 bg-white text-black rounded shadow-xl z-[60] overflow-hidden">
-                {['en', 'hi', 'pb'].map((lang) => (
-                  <button
-                    key={lang}
-                    className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-sm"
-                    onClick={() => { i18n.changeLanguage(lang); setShowLangOptions(false); }}
-                  >
-                    {lang === 'en' ? 'English' : lang === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ'}
-                  </button>
-                ))}
-              </div>
-            )}
-    </div>
+       <div ref={langRef} className="relative">
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      setShowLangOptions(prev => !prev);
+    }}
+    className="text-white px-4 py-2 flex items-center gap-3 text-xl md:text-2xl hover:text-green-500 transition-colors">
+    <GrLanguage />
+  </button>
+  <AnimatePresence>
+    {showLangOptions && (
+      <motion.div
+        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+        transition={{ duration: 0.18 }}
+        onClick={(e) => e.stopPropagation()}
+        className="absolute left-0 mt-2 w-32 bg-white text-black rounded shadow-xl z-[999] ">
+        {["en", "hi", "pb"].map((lang) => (
+          <button
+            key={lang}
+            className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-sm"
+            onClick={() => {
+              i18n.changeLanguage(lang);
+              setShowLangOptions(false);}}>
+            {lang === "en"
+              ? "English"
+              : lang === "hi"
+              ? "हिंदी"
+              : "ਪੰਜਾਬੀ"}
+          </button>
+        ))}
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
+
         
       </div>
         </div> 

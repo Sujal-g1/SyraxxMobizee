@@ -5,6 +5,7 @@ const { connectDB } = require("./database");
 const userFeature = require("./routes/userFeature");
 const routeSearch = require("./routes/routeSearch");
 const routeBuses = require("./routes/routeBuses");
+const alcoholRoutes = require("./routes/alcoholRoutes");
 
 const adminAuthRoutes = require("./routes/admin/adminAuth.routes");
 const adminDashboardRoutes = require("./routes/admin/dashboard.routes");
@@ -55,6 +56,8 @@ app.use("/api/admin/dashboard", adminDashboardRoutes);
 app.get("/", (req, res) => res.send("🚍 Mobizee Backend Running"));
 
 app.use("/api/reservation", reservationRoutes);
+
+app.use("/api/alcohol", alcoholRoutes);
 
 // Start Server
 // const PORT = process.env.PORT || 5001;

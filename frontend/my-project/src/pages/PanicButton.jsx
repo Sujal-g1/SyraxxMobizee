@@ -1,10 +1,10 @@
-import React, { useState, useRef , useEffect } from "react";
+import React, { useState, useRef } from "react";
 import hornSound from "../assets/horn.mp3";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { motion } from 'framer-motion'
-
-const PanicButton = ({user}) => {
+import { motion, AnimatePresence } from "framer-motion";
+import { IoCloseSharp } from "react-icons/io5";
+const PanicButton = ({ user }) => {
   const [pressCount, setPressCount] = useState(0);
   const [isPanic, setIsPanic] = useState(false);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
@@ -12,24 +12,27 @@ const PanicButton = ({user}) => {
   const [error, setError] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
 
+  const [showEmailSettings, setShowEmailSettings] = useState(false);
+  const [emails, setEmails] = useState(["", "", ""]);
+  const [savingEmails, setSavingEmails] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
+
+  const API = import.meta.env.VITE_API_URL;
   const audioRef = useRef(null);
   const navigate = useNavigate();
 
   const handlePanic = () => {
     const newCount = pressCount + 1;
     setPressCount(newCount);
-
     if (newCount >= 3) {
       setIsPanic(true);
-      setError(null);
-
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
+        audioRef.current.loop = true; // Keep playing until stopped
+        audioRef.current
+          .play()
+          .catch((e) => console.error("Audio play failed", e));
         setIsSoundPlaying(true);
       }
-
       getLocation();
     }
   };
@@ -39,44 +42,34 @@ const PanicButton = ({user}) => {
       setError("Geolocation not supported");
       return;
     }
-
     setLoadingLocation(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-        });
+      async (pos) => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        setLocation({ lat, lon });
         setLoadingLocation(false);
+        try {
+          await fetch(`${API}/api/panic`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user._id, lat, lon }),
+          });
+        } catch (err) {
+          console.error("API Error:", err);
+        }
       },
       () => {
-        setError("Getting location...");
+        setError("Location access denied");
         setLoadingLocation(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true },
     );
   };
 
-  const handleStop = () => {
-  setIsPanic(false);
-  setPressCount(0);
-  setLocation({ lat: null, lon: null });
-  setError(null);
-  setLoadingLocation(false);
+  // --- RECTIFIED STOP FUNCTIONS ---
 
-  if (audioRef.current) {
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
-    setIsSoundPlaying(false);
-  }
-
-  // ⏩ Redirect back to trigger page
-  navigate("/homepage"); // change this route if needed
-};
-
- 
-
-  const handleStopSound = () => {
+  const handleStopSound = (e) => {
+    if (e) e.stopPropagation(); // Prevents bubbling to parent elements
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -84,93 +77,216 @@ const PanicButton = ({user}) => {
     }
   };
 
+  const handleStop = (e) => {
+    if (e) e.stopPropagation();
+    // 1. Kill the sound first
+    handleStopSound();
+
+    // 2. Reset local state
+    setIsPanic(false);
+    setPressCount(0);
+    setLocation({ lat: null, lon: null });
+
+    // 3. Navigate away
+    setTimeout(() => {
+      navigate("/homepage");
+    }, 100);
+  };
+
+  const saveEmails = async () => {
+    setSavingEmails(true);
+    try {
+      const res = await fetch(`${API}/api/emergency/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user._id,
+          emails: emails.filter((e) => e !== ""),
+        }),
+      });
+      if (res.ok) {
+        setSavedMessage("Contacts saved! ✅");
+        setTimeout(() => {
+          setSavedMessage("");
+          setShowEmailSettings(false);
+        }, 1500);
+      }
+    } catch (err) {
+      setSavedMessage("Error saving");
+    } finally {
+      setSavingEmails(false);
+    }
+  };
+
   return (
-    <>
+    <div className="min-h-screen bg-slate-50 font-sans pb-10 overflow-x-hidden">
+      <Navbar user={user} />
 
-    <Navbar user={user}/>
-
-    <motion.div
-     initial={{y:50}}
-    animate={{y:0}}
-    transition={{
-      delay:0.5,
-      duration: 1.2,
+      <main className="max-w-md mx-auto px-6 pt-8">
+        {/* Settings Toggle */}
+        <motion.div className="flex justify-center mb-6"
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{
+          delay:0.5,
+          duration: 1.8,
           ease: [0.16, 1, 0.3, 1], 
-    }}
-      className={`min-h-screen flex items-center justify-center px-4 transition-colors duration-500 overflow-scroll
-      ${isPanic ? "bg-red-100" : "bg-gray-200"}`}
-    >
-      <div
-        className={`relative w-full max-w-md rounded-3xl p-8 text-center shadow-xl shadow-red-300
-        ${isPanic ? "bg-white border-2 border-red-500" : "bg-gray-50"}`}
-      >
-        {/* Pulse Ring */}
-        {isPanic && (
-          <div className="absolute inset-0 rounded-3xl border-4 border-red-400 animate-ping opacity-30" />
-        )}
-
-        {/* Title */}
-        <h1 className="text-2xl font-bold mb-2">
-          {isPanic ? "🚨 Panic Mode Active" : "Emergency Panic Button"}
-        </h1>
-
-        <p className="text-gray-600 mb-6 text-sm">
-          Press the button 3 times to activate emergency mode
-        </p>
-
-        {/* Panic Button */}
-        <button
-          onClick={handlePanic}
-          className={`mx-auto w-40 h-40 rounded-full text-white text-xl font-bold
-          flex items-center justify-center shadow-lg transition-all duration-300 
-          ${
-            isPanic
-              ? "bg-red-700 hover:bg-red-800 scale-105"
-              : "bg-red-500 hover:bg-red-600"
-          }`}
+        }}>
+          <button
+            onClick={() => setShowEmailSettings(!showEmailSettings)}
+            className={`relative z-10 flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold shadow-sm transition-all
+              ${showEmailSettings ? "bg-slate-800 text-white" : "bg-white text-slate-600 border border-slate-200"}`}
+          >
+            {showEmailSettings ? (
+              <IoCloseSharp className="w-5 h-5 font-bold" />
+            ) : (
+              "⚙️ Emergency Contacts"
+            )}
+          </button>
+        </motion.div>
+        {/* Email Settings Card */}
+        <AnimatePresence>
+          {showEmailSettings && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-[2rem] p-6 shadow-xl border border-slate-100 mb-8 relative z-20"
+            >
+              <h2 className="font-black text-slate-800 text-lg mb-4">
+                Relative's Emails
+              </h2>
+              <div className="space-y-3">
+                {emails.map((email, i) => (
+                  <input
+                    key={i}
+                    type="email"
+                    value={email}
+                    placeholder={`Email ${i + 1}`}
+                    onChange={(e) => {
+                      const copy = [...emails];
+                      copy[i] = e.target.value;
+                      setEmails(copy);
+                    }}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  />
+                ))}
+              </div>
+              <button
+                onClick={saveEmails}
+                disabled={savingEmails}
+                className="w-full mt-4 py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg hover:bg-blue-700 transition-colors"
+              >
+                {savingEmails ? "Saving..." : "Save Settings"}
+              </button>
+              {savedMessage && (
+                <p className="text-center text-xs font-bold text-emerald-500 mt-3">
+                  {savedMessage}
+                </p>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Panic Button Card */}
+        <motion.div
+          initial={{ y: 0 }}
+        animate={{ y: 80 }}
+        transition={{
+          delay:0.5,
+          duration: 1.8,
+          ease: [0.16, 1, 0.3, 1], 
+        }}
+          className={`relative rounded-[2.5rem] p-10 text-center shadow-2xl  z-0 overflow-hidden
+  ${isPanic ? "bg-white border-2 border-red-500 shadow-red-200" : "bg-white border border-slate-100 shadow-slate-100"}`}
         >
-          {isPanic ? "ALERT" : `${pressCount}/3`}
-        </button>
-
-        {/* Controls */}
-        <div className="mt-6 flex flex-col gap-3">
+          {/* --- NEW WAVE EFFECT --- */}
           {isPanic && (
-            <button
-              onClick={handleStop}
-              className="py-3 rounded-xl bg-gray-800 text-white font-semibold hover:bg-black transition"
-            >
-              Stop Panic
-            </button>
-          )}
-
-          {isSoundPlaying && (
-            <button
-              onClick={handleStopSound}
-              className="py-3 rounded-xl bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition"
-            >
-              Stop Sound
-            </button>
-          )}
-        </div>
-
-        {/* Location Status */}
-        <div className="mt-6 text-sm text-gray-700">
-          {loadingLocation && <p>📡 Getting location...</p>}
-          {error && <p className="text-blue-600">{error}</p>}
-
-          {location.lat && location.lon && (
-            <div className="mt-3 p-4 rounded-xl bg-gray-100 text-left">
-              <p className="font-semibold mb-1">📍 Current Location</p>
-              <p>Lat: {location.lat}</p>
-              <p>Lon: {location.lon}</p>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              {[1, 2, 3].map((i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0.8, opacity: 0.5 }}
+                  animate={{
+                    scale: [0.8, 2.5],
+                    opacity: [0.5, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.6,
+                    ease: "easeOut",
+                  }}
+                  className="absolute w-44 h-44 rounded-full border-2 border-red-400"
+                />
+              ))}
+              {/* Subtle full-card flash */}
+              <motion.div
+                animate={{ opacity: [0, 0.1, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+                className="absolute inset-0 bg-red-500"
+              />
             </div>
           )}
-        </div>
+          {/* --- END WAVE EFFECT --- */}
 
-        <audio ref={audioRef} src={hornSound} />
-      </div>
-    </motion.div>
-    </>
+          <h1
+            className={`text-2xl font-black mb-2 relative z-10 ${isPanic ? "text-red-600" : "text-slate-800"}`}
+          >
+            {isPanic ? "EMERGENCY ACTIVE" : "Panic Button"}
+          </h1>
+          <p className="text-slate-400 text-sm mb-10 font-medium relative z-10">
+            Tap 3 times to alert contacts
+          </p>
+
+          <button
+            onClick={handlePanic}
+            className={`relative mx-auto w-44 h-44 rounded-full text-white text-4xl font-black shadow-2xl flex items-center justify-center transition-all z-20
+    ${isPanic ? "bg-red-600 scale-105" : "bg-red-500 hover:bg-red-600"}`}
+          >
+            {isPanic ? "!" : `${pressCount}/3`}
+          </button>
+
+          {/* CONTROL SECTION */}
+          <div className="mt-10 space-y-4 relative z-30">
+            {isPanic && (
+              <button
+                onClick={handleStop}
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all block"
+              >
+                End Emergency & Exit
+              </button>
+            )}
+
+            {isSoundPlaying && (
+              <button
+                onClick={handleStopSound}
+                className="w-full py-4 bg-amber-400 text-amber-900 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all block"
+              >
+                🔇 Silence Sound Only
+              </button>
+            )}
+
+            {/* Status Footer */}
+            {(location.lat || loadingLocation) && (
+              <div className="mt-4 pt-4 border-t border-slate-50 relative z-10">
+                {loadingLocation ? (
+                  <p className="text-blue-500 text-xs font-bold animate-pulse uppercase tracking-widest">
+                    📡 Sending Location...
+                  </p>
+                ) : (
+                  <p className="text-slate-400 text-[10px] font-mono">
+                    Coordinates: {location.lat}, {location.lon}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>{" "}
+      </main>
+
+      <audio ref={audioRef} src={hornSound} />
+    </div>
   );
 };
 

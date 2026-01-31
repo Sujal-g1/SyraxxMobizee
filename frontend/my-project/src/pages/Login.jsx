@@ -2,7 +2,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase.js";
 
 import { useState } from "react";
-import firstpage from '../assets/firstpage.png';
+import firstpage from "../assets/firstpage.png";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = ({ setUser }) => {
@@ -11,10 +11,8 @@ const Login = ({ setUser }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-const API = import.meta.env.VITE_API_URL;
-// console.log("API BASE URL =", API);
-
-
+  const API = import.meta.env.VITE_API_URL;
+  // console.log("API BASE URL =", API);
 
   // This function will call your backend API to login
   const handleSubmit = async (e) => {
@@ -22,12 +20,11 @@ const API = import.meta.env.VITE_API_URL;
     setError(""); // Clear previous errors
 
     try {
-          const response = await fetch(`${API}/api/users/login`, {
-          method: "POST",
-           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-          });
-
+      const response = await fetch(`${API}/api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
@@ -48,37 +45,34 @@ const API = import.meta.env.VITE_API_URL;
     }
   };
 
-
   // authentication firebase
-const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-    // IMPORTANT: Get the ID Token from Firebase
-    const idToken = await user.getIdToken(); 
+      // IMPORTANT: Get the ID Token from Firebase
+      const idToken = await user.getIdToken();
 
-    // Send only the idToken to the backend
-    const response = await fetch(`${API}/api/users/google-login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }), 
-    });
+      // Send only the idToken to the backend
+      const response = await fetch(`${API}/api/users/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
-      navigate("/homepage");
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+        navigate("/homepage");
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
     }
-  } catch (error) {
-    console.error("Google Login Error:", error);
-  }
-};
-
-  
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -93,15 +87,19 @@ const handleGoogleLogin = async () => {
         ></div>
 
         <div className="w-full md:w-1/2 p-10">
-          <h2 className="text-3xl font-bold mb-6 flex justify-center text-gray-800">Welcome</h2>
+          <h2 className="text-3xl font-bold mb-6 flex justify-center text-gray-800">
+            Welcome
+          </h2>
 
-         
+          <p className="text-gray-500 mb-6">
+            Enter your email and password to access your account
+          </p>
 
-          <p className="text-gray-500 mb-6">Enter your email and password to access your account</p>
-  
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-lg mb-2 font-bold text-gray-600">Email</label>
+              <label className="block text-lg mb-2 font-bold text-gray-600">
+                Email
+              </label>
               <input
                 type="email"
                 placeholder="sample@gmail.com"
@@ -112,7 +110,9 @@ const handleGoogleLogin = async () => {
               />
             </div>
             <div>
-              <label className="block text-lg font-bold mb-2 text-gray-600">Password</label>
+              <label className="block text-lg font-bold mb-2 text-gray-600">
+                Password
+              </label>
               <input
                 type="password"
                 placeholder="password"
@@ -137,8 +137,9 @@ const handleGoogleLogin = async () => {
 
             <button
               type="submit"
-            className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 bg-black text-white transition
-              hover:bg-white hover:text-black  duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
+              className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 bg-black text-white transition
+              hover:bg-white hover:text-black  duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101"
+            >
               Sign in
             </button>
           </form>
@@ -147,20 +148,27 @@ const handleGoogleLogin = async () => {
             type="button"
             onClick={handleGoogleLogin}
             className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-black hover:text-white  mt-4
-            transition-transform duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101">
+            transition-transform duration-[600ms] ease-[cubic-bezier(0, 0.55, 0.45, 1)]  hover:scale-101"
+          >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="Google"
-              className="w-5 h-5"/>
+              className="w-5 h-5"
+            />
             Sign in with Google
           </button>
 
-         {/* <p className="mt-5">this model is under construction , right now we are signing with google only for testing</p> */}
+          {/* <p className="mt-5">this model is under construction , right now we are signing with google only for testing</p> */}
 
           <p className="text-sm text-gray-500 text-center mt-6 ">
-            Don't have an account?{" "} <a onClick={handleGoogleLogin} className="text-indigo-600 cursor-pointer">Sign up</a>
-          </p> 
-          
+            Don't have an account?{" "}
+            <a
+              onClick={handleGoogleLogin}
+              className="text-indigo-600 cursor-pointer"
+            >
+              Sign up
+            </a>
+          </p>
         </div>
       </div>
     </div>

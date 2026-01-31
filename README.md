@@ -41,3 +41,5 @@ Mobizee aims to:
 npm install bcryptjs
 
 npm install qrcode.react
+
+npm install nodemailer mongoose express dotenv

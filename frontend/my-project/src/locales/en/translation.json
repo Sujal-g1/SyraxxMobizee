@@ -1,57 +1,51 @@
 {
 
   "welcome": "Your Smart Companion for Travel",
-
   "continue": "Continue",
-
   "green_points": "Green Points",
-
   "see_route" :"See Route",
   "see_buses" : "See Buses",
 
 
 "Offers":"Grab the Offers ",
-
 "Trip":"Fuel the fun—book your family bus adventure today!",
 "Trip1": "More easy to Travel with family",
-
 "Customer_Support":"Customer Support",
-
-
 "E-Tickets":"How to generate MobMagic Card?",
 
 "Carbon":"Contribute in Making India Carbon Neutral",
 
 
 
-"Free_Cancel" : "Cancel bus tickets without paying cancellation charges. Quick refunds for cancellations or issues.",
-"adjustable" : "Modify your travel date at least 8 hours before departure.",
-"Earn_Rewards" : "Refer friends and earn ₹100 in your Bus wallet after their first trip.",
-"Book_Women": "Exclusive deals, women-preferred buses & helplines.",
-"customer_Supp": "Assistance anytime for bookings.",
-"Tracking" :  "Track your bus in real-time & plan better.",
+"Free_Cancel" : "Zero-Stress Booking. Cancel your ticket at no extra cost if your plans change.",
+"adjustable" : "Total Flexibility. Easily modify your departure time or date to fit your schedule.",
+"Earn_Rewards" : "Loyalty Pays Off. Accumulate reward points every time you ride and redeem them for free trips.",
+"Book_Women": "Safe & Secure. Dedicated booking options for women to ensure a comfortable travel environment.",
+"customer_Supp": "Always Connected. Track your ride in real-time and reach our support team instantly.",
+"Tracking" :  "24/7 help and real-time GPS tracking at your fingertips. ",
+"Green_Points": "Earn points on every booking! Whether it's an Electric or Express bus, every seat helps the planet. Redeem points for instant discounts on your next trip.",
+"Nearby_Bus": "Never miss a ride. View all buses near your current location in real-time and plan your walk to the stop perfectly.",
 
 
 
-
-"Daily_Streaks" : "Earn Green Points every day you travel with us. Keep your streak going for bonus points and surprise rewards.",
-"Ticket_Redemption" : "Use your Green Points to buy or discount e-tickets, making your travel more affordable.",
-"Exclusive_Vouchers" : "Unlock exciting vouchers for food, shopping, and entertainment partners.",
+"Daily_Streaks" : "Open the app every day to unlock bigger point multipliers and bonus rewards.",
+"Ticket_Redemption" : "Use your accumulated points to pay for your next ticket and travel for free.",
+"Exclusive_Vouchers" : "Get special discount codes from our lifestyle and food partners after every trip.",
 "Milestone_Rewards" : "Hit milestones (e.g., 100, 250, 500 points) to earn special perks like priority boarding or free rides.",
-"Eco_Bonus" : "Earn extra Green Points when you choose eco-friendly options.",
+"Eco_Bonus" : "Earn extra points for consistently choosing public transport over private cars.",
 "Referral_Rewards" : "Invite friends to join and get bonus points when they start traveling.",
 "Leaderboard" : "Climb the leaderboard and collect badges like Eco Warrior, Daily Rider, or Top Traveler.",
 "Lucky_Draws" : "Every month, use your Green Points to enter raffles for bigger prizes (gadgets, travel passes, vouchers).",
-"Green_Donations" :"Convert points into tree plantation or charity support, making your rides eco-friendly.",
+"Green_Donations" :"Donate your points toward planting trees or cleaning highways across India.",
 
 
 
-"Select":"Go the MobMogic Card section at the top of the Screen",
-"Journey":"Enter Your Bank account  Details",
-"Payment":"Submit all the details",
-"online_ticket":"You will get an Id , add it into the NFC of the phone",
-"Ticket":"Now you can use it with seamless connectivity",
-"Check_in": "Just tap at the bus gate and board the bus"
+"Select":"Go to the MobMagic Card section at the top of the screen.",
+"Journey":"Enter your Bank Account or Wallet details securely.",
+"Payment":"Verify and submit all the details to link your card.",
+"online_ticket":"You will receive a unique ID; add it to your phone's NFC settings.",
+"Ticket":"Your card is ready! Enjoy seamless connectivity on every trip.",
+"Check_in": "Simply tap your phone at the bus gate to board instantly."
 
 
 
