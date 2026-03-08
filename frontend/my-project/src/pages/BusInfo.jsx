@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -10,6 +12,7 @@ const BusInfo = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -109,12 +112,23 @@ const BusInfo = ({ user }) => {
               const isFirst = index === 0; // earliest bus
 
               return (
-                <div
-                  key={bus._id || index}
-                  className={`border rounded-lg p-4 shadow-sm flex justify-between items-center
-                  ${isFirst ? "border-green-500 bg-green-50" : "border-gray-200"}
-                `}
-                >
+               <div
+              key={bus._id || index}
+             onClick={() =>
+            navigate("/bus/reserve", {
+            state: {
+           bus,
+           from: result.from,
+        to: result.to,
+      },
+    })
+  }
+  className={`cursor-pointer border rounded-lg p-4 shadow-sm flex justify-between items-center
+  hover:scale-[1.01] transition
+  ${isFirst ? "border-green-500 bg-green-50" : "border-gray-200"}
+`}
+>
+
                   {/* Left */}
                   <div>
                     <p className="text-lg font-semibold">

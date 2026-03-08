@@ -136,6 +136,13 @@ const handleGreen = ()=>{
   navigate("/green-points")
 }
 
+const handleProfileClick = () => {
+    // 3. Logic: Navigate to the profile page
+    // You can also toggle your menu here if needed
+    navigate('/user-profile'); 
+    setShowUserMenu(false); 
+  };
+
   return (
     <>
     {/* Navbar */}
@@ -243,14 +250,13 @@ const handleGreen = ()=>{
                {/* user */}
              
              <div className="relative">
-  <button
-    onClick={() => setShowUserMenu(prev => !prev)}
-    className="bg-white text-black px-5 py-2 flex items-center gap-1 text-lg rounded-lg
+           <button
+           onClick={handleProfileClick}
+            className="bg-white text-black px-5 py-2 flex items-center gap-1 text-lg rounded-lg
                border hover:bg-black hover:text-white
-               transition-all duration-300 ease-in-out"
-  >
-    <FaUser /> {user ? user.firstName : "Guest"}
-  </button>
+               transition-all duration-300 ease-in-out">
+             <FaUser /> {user ? user.firstName : "Guest"}
+            </button>
 
   {showUserMenu && (
     <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-xl z-[120] overflow-hidden">
@@ -317,7 +323,9 @@ const handleGreen = ()=>{
         <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center text-black shadow-lg">
           <FaUser size={36} />
         </div>
-        <span className="text-lg font-semibold">
+        <span 
+        onClick={handleProfileClick}
+        className="text-lg font-semibold">
           {user ? user.firstName : "Guest"}
         </span>
       </motion.div>

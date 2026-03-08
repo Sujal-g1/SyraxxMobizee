@@ -11,11 +11,8 @@ const Start = () => {
   const handleContinue = () => {
     const token = localStorage.getItem("token");
 
-    if (token) {
-      navigate("/homepage");
-    } else {
-      navigate("/login");
-    }
+    token ? navigate("/homepage") : navigate("/login")
+
   };
 
   return (

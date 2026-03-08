@@ -21,6 +21,9 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './pages/multiLang';
 import DriverAlcohol from './pages/DriverAlcohol';
 import GreenPointsPage from './pages/GreenPointsPage';
+import UserProfilePage from './pages/UserProfilePage';
+import ReserveSeat from './pages/ReserveSeat';
+import Ticket from './pages/Ticket';
 
 
 const App = () => {
@@ -114,6 +117,9 @@ const ProtectedRoute = ({ user,  loading, children }) => {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="driver-alcohol" element={<DriverAlcohol />}/>
         <Route path="green-points" element={<GreenPointsPage user={user} setUser={setUser}/>}/>
+        <Route path="user-profile" element={<UserProfilePage user={user} setUser={setUser}/>}/>
+        <Route path="/bus/reserve" element={<ReserveSeat user={user} />} />
+        <Route path="/bus/ticket" element={<Ticket user={user} />} />
 
 
         </Routes>

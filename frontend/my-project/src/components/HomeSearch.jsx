@@ -217,14 +217,14 @@ const handleSeeRoute = () => {
     <button
       type="button"
       onClick={handleSeeRoute}
-      className="bg-black text-white rounded-lg w-[30%] text-sm md:text-lg">
+      className="bg-black text-white rounded-lg w-[30%] text-sm md:text-lg hover:scale-101">
       {t("see_route")}
     </button>
     
     
        <button
       onClick={handleSeeBuses}
-      className="bg-black text-white text-sm md:text-lg rounded-lg w-[30%]">
+      className="bg-black text-white text-sm md:text-lg rounded-lg w-[30%]  hover:scale-101">
       {t("see_buses")}
     </button>
     
