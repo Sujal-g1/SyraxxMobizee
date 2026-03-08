@@ -172,7 +172,7 @@ const Login = ({ setUser }) => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-sm pt-1 mt-5">
+            <div className="flex justify-between items-center text-sm pt-1 mt-3">
               <label className="flex items-center text-gray-500 font-medium cursor-pointer">
                 <input type="checkbox" className="mr-2 w-4 h-4 rounded border-gray-300 accent-black cursor-pointer" />
                 Keep me signed in
@@ -202,7 +202,7 @@ const Login = ({ setUser }) => {
               whileTap={{ scale: 0.98 }}
               disabled={isLoading}
               type="submit"
-              className="w-full py-4 rounded-2xl bg-black text-white font-black text-lg shadow-xl shadow-gray-200 active:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-15"
+              className="w-full py-4 rounded-2xl bg-black text-white font-black text-lg shadow-xl shadow-gray-200 active:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-8"
             >
               {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
               {isLoading ? "Signing in..." : "Sign In"}
