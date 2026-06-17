@@ -4,8 +4,13 @@
 
 ### https://syraxxmobizee-frontend.onrender.com/
 
+## ## Known Issues -----------
 
-#### if you encounter problem after reloading then go to original url , fixing this issue
+This project is currently under active development and testing. As new features are being implemented and existing functionality is being refined, users may encounter occasional bugs, incomplete features, or unexpected behavior.
+
+If you experience any issues, please report them through the Issues section of this repository.
+
+ if you encounter problem after reloading then go to original url , fixing this issue
 
 Mobizee is a modern, responsive smart mobility web application designed to improve urban transportation through real-time location tracking, multilingual support, digital wallet integration, green reward points, and a built-in emergency panic system.
 
