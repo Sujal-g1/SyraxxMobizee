@@ -1,10 +1,9 @@
 # Mobizee 🚍🌱
 
-## Currenty Under Construction  , so Some features may not work properly as intended
 
 ### https://syraxxmobizee-frontend.onrender.com/
 
-## ## Known Issues -----------
+## Known Issues -----------
 
 This project is currently under active development and testing. As new features are being implemented and existing functionality is being refined, users may encounter occasional bugs, incomplete features, or unexpected behavior.
 
