@@ -73,27 +73,38 @@ Future updates will significantly improve connectivity between stations.
 
 ---
 
-# 🎫 MobMagic Card
+## 📲 MobMagic Card
 
-The MobMagic Card is Mobizee's digital smart travel card system.
+MobMagic Card is Mobizee's vision for a completely digital travel card that eliminates the need to carry physical transport cards.
 
-It is designed to simulate how modern smart transportation cards work.
+Instead of purchasing and carrying a separate smart card, users will be able to use their smartphone as their travel pass. Using NFC (Near Field Communication) technology, passengers can simply tap their phone on the station terminal while entering and exiting a station.
 
-Features include:
+### How It Will Work
 
-* Digital travel identity
-* Wallet integration
-* Travel records
-* Passenger information management
-* Quick access to mobility services
+* Tap-In at the starting station
+* Travel normally through the network
+* Tap-Out at the destination station
+* Fare is automatically calculated based on the journey
+* Amount is deducted directly from the user's Mobizee Wallet
+
+### Key Benefits
+
+* No physical card required
+* No need to carry extra travel passes
+* Faster station entry and exit
+* Linked directly to the user's wallet
+* Works even without an internet connection
+* No need to unlock or turn on the phone for every transaction
+* Secure and convenient travel experience
 
 ### Current Status
 
-The MobMagic Card is currently operating in demonstration mode and is intended to showcase the platform experience.
+This feature is currently under development and is not available in the web application.
 
-Real-world transport authority integration is planned for future versions.
+Since NFC-based transit functionality requires mobile device hardware support and deeper operating system integration, it is being developed for the upcoming mobile application version of Mobizee.
 
----
+Our goal is to provide a seamless tap-and-travel experience similar to modern metro and transit systems while removing the dependency on physical smart cards.
+
 
 # 💳 Digital Wallet System
 
