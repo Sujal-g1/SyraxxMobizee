@@ -1,6 +1,6 @@
 # Mobizee 🚍🌱
 
-### Smart Mobility Platform for Sustainable and Accessible Transportation
+### Smart Mobility Platform 
 
 🌐 Live Demo: https://syraxxmobizee-frontend.onrender.com/
 
