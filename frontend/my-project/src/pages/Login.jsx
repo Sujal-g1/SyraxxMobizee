@@ -211,12 +211,13 @@ const Login = ({ setUser }) => {
 
           <p className="text-sm text-gray-500 text-center mt-auto md:mt-10 pb-4 md:pb-0">
             Don't have an account?{" "}
-            <button
-              onClick={handleGoogleLogin}
+            <Link
+            to='/signup'
+             
               className="text-black font-extrabold hover:underline underline-offset-4 decoration-2 transition-colors"
             >
-              Sign up for free
-            </button>
+              Create 0ne!
+            </Link>
           </p>
         </div>
       </motion.div>
