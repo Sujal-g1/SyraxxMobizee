@@ -95,7 +95,7 @@ const ProtectedRoute = ({ user,  loading, children }) => {
         <Routes>
           <Route path='/' element={<Start />} />
           <Route path='/login' element={<Login setUser={setUser} />} />
-          {/* <Route path='/login/signup' element={<UserSignup />} /> */}
+         <Route path='/signup' element={<UserSignup />} /> 
          <Route
   path="/homepage"
   element={
