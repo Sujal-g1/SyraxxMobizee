@@ -52,114 +52,215 @@ const UserSignup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="flex w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
+           <div className="min-h-screen w-full flex items-end md:items-center justify-center bg-gray-100 relative overflow-hidden">
+      <motion.div 
+      initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="absolute inset-0 z-0"
+        // className="absolute inset-0 z-0 transition-opacity duration-700"
+        style={{
+          backgroundImage: `url(${firstpage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+       
+        <div className="hidden md:block absolute inset-0 bg-gray-100"></div>
+        <div className="md:hidden absolute inset-0 bg-black/20"></div>
+      </motion.div>
+
+    <motion.div
+    initial={{ y: "100%" }}
+    animate={{ y: 0 }}
+    transition={{ duration:0.9 }}
+    className="relative z-10 flex w-full h-[92vh] md:h-auto md:max-w-5xl bg-white rounded-t-[40px] md:rounded-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
+        
+        {/* Left Side: Desktop Image Side */}
         <div
-          className="hidden md:flex w-1/2 items-center justify-center p-10 text-white relative"
+          className="hidden md:flex w-1/2 items-center justify-center p-10 relative"
           style={{
             backgroundImage: `url(${firstpage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-        ></div>
+        >
+          <div className="absolute inset-0 bg-black/10"></div>
+        </div>
 
-        {/* Right Side */}
-        <div className="w-full md:w-1/2 p-2">
-          <h2 className="text-3xl font-bold flex justify-center text-gray-800">Welcome</h2>
-          <p className="text-gray-500 mb-3 mt-2 flex justify-center text-3xl font-extrabold">Create Your Account</p>
+        {/* Form Container */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-start md:justify-center overflow-y-auto">
+          
+          {/* Decorative Drag Handle (Mobile only) */}
+          <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8 md:hidden"></div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 p-3">
-            <div>
-              <h3 className="block text-lg font-bold text-gray-600">Enter Your Details</h3>
-              <div className="flex gap-2 w-full">
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  required
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-1/2 px-2 py-2 border rounded-lg focus:ring-1 focus:ring-black outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  required
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-1/2 px-4 py-3 border rounded-lg focus:ring-1 focus:ring-black outline-none"
-                />
-              </div>
+            {/* welcome line */}
+          <motion.div 
+           initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.5}}
+            className="text-center md:text-left mb-8">
+          {/* className="text-center md:text-left mb-8"> */}
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+              Welcome 
+            </h2>
+            <p className="text-gray-500 mt-2 font-medium">
+              Ready to start your journey?
+            </p>
+          </motion.div>
 
-              <h3 className="block text-lg mt-2 font-bold text-gray-600">Phone Number</h3>
+            {/* google */}
+           <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            disabled={isLoading}
+            type="button"
+            // onClick={handleGoogleLogin}
+            className="w-full border-2 border-gray-100 py-3.5 rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+            ) : (
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="G" className="w-5 h-5" />
+            )}
+            <span className="font-bold text-gray-700">Continue with Google</span>
+          </motion.button>
+
+           <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-100"></div>
+            <span className="px-4 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">or</span>
+            <div className="flex-grow border-t border-gray-100"></div>
+          </div>
+
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex gap-4">
+  <div className="flex-1">
+    <label className="block text-[10px] font-black text-gray-400 uppercase ml-1 tracking-wider mb-2">
+      First Name
+    </label>
+    <input
+      type="text"
+      placeholder="Your first name"
+      value={firstName}
+      required
+      onChange={(e) => setFirstName(e.target.value)}
+      className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-black focus:bg-white focus:outline-none focus:ring-0 transition-all"
+    />
+  </div>
+
+  <div className="flex-1">
+    <label className="block text-[10px] font-black text-gray-400 uppercase ml-1 tracking-wider mb-2">
+      Last Name
+    </label>
+    <input
+      type="text"
+      placeholder="Your last name"
+      value={lastName}
+      required
+      onChange={(e) => setLastName(e.target.value)}
+      className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-black focus:bg-white focus:outline-none focus:ring-0 transition-all"
+    />
+  </div>
+</div> 
+            
+        <div className="space-y-1">
+          <label className="text-[10px] font-black text-gray-400 uppercase ml-1 tracking-wider">Phone Number</label>
              <input
-              type="tel"
-              placeholder="Phone number"
-              pattern="[0-9]{10}"
-              required
-              value={phoneNum}
-              onChange={(e) => setPhoneNum(e.target.value)}
-              className="w-full px-2 py-3 border rounded-lg focus:ring-1 focus:ring-black outline-none"
-              />
-
-
-              <label className="block text-lg mt-3 font-bold text-gray-600">Email</label>
-              <input
-                type="email"
-                placeholder="sample@gmail.com"
+                type="number"
+                placeholder="1234567890"
+                value={phoneNum}
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-2 py-3 border rounded-lg focus:ring-1 focus:ring-black outline-none"
+                onChange={(e) => setPhoneNum(e.target.value)}
+                className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent focus:border-black focus:bg-white rounded-2xl outline-none transition-all"
               />
             </div>
 
-            <div>
-              <label className="block text-lg font-bold mb-2 text-gray-600">Password</label>
-              <input
-                type="password"
-                placeholder="Set password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-2 py-3 border rounded-lg focus:ring-1 focus:ring-black outline-none"
+        <div className="space-y-1">
+          <label className="text-[10px] font-black text-gray-400 uppercase ml-1 tracking-wider">Email Address</label>
+             <input
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                required
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent focus:border-black focus:bg-white rounded-2xl outline-none transition-all"
               />
+            </div>
 
-              <div className="flex justify-between items-center text-sm mt-2">
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />
-                  Remember me
-                </label>
-                <a href="#" className="text-indigo-600 hover:underline">
-                  Forgot Password?
-                </a>
+        <div className="space-y-1">
+          <label className="text-[10px] font-black text-gray-400 uppercase ml-1 tracking-wider">Password</label>
+            <div className="relative">
+              <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  required
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-5 py-4 bg-gray-50 border-2 border-transparent focus:border-black focus:bg-white rounded-2xl outline-none transition-all"
+                />
+                {/* eye to show unshow pass */}
+              <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+
               </div>
             </div>
 
-            <button
+            <div className="flex justify-between items-center text-sm pt-1 mt-3">
+              <label className="flex items-center text-gray-500 font-medium cursor-pointer">
+                <input type="checkbox" className="mr-2 w-4 h-4 rounded border-gray-300 accent-black cursor-pointer" />
+                Keep me signed in
+              </label>
+              <a href="#" className="text-black font-bold hover:underline decoration-2">
+                Forgot?
+              </a>
+            </div>
+
+            {/* Error Message with Animation */}
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+                >
+                  <div className="w-1 h-1 bg-red-600 rounded-full animate-ping"></div>
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={isLoading}
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">
-              Sign Up
-            </button>
-
-            <button
-              type="button"
-              className="w-full border py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition">
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              Sign Up with Google
-            </button>
+              className="w-full py-4 rounded-2xl bg-black text-white font-black text-lg shadow-xl shadow-gray-200 active:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-8"
+            >
+              {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+              {isLoading ? "Signing in..." : "Sign In"}
+            </motion.button>
           </form>
+          
 
-          <p className="text-sm text-gray-500 text-center mt-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-indigo-600 font-semibold hover:underline">
-              Sign in
+
+          <p className="text-sm text-gray-500 text-center mt-auto md:mt-10 pb-4 md:pb-0">
+            Alreayd have an account?{" "}
+            <Link
+            to='/login'
+             
+              className="text-black font-extrabold hover:underline underline-offset-4 decoration-2 transition-colors"
+            >
+              Create 0ne!
             </Link>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
