@@ -5,6 +5,7 @@ import firstpage from "../assets/firstpage.png";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; 
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState("");
