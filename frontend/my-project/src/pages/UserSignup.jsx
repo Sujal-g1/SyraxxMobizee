@@ -253,10 +253,9 @@ const UserSignup = () => {
             Alreayd have an account?{" "}
             <Link
             to='/login'
-             
               className="text-black font-extrabold hover:underline underline-offset-4 decoration-2 transition-colors"
             >
-              Create 0ne!
+              Sign in!
             </Link>
           </p>
         </div>
