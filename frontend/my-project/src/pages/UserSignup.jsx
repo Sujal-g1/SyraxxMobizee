@@ -1,6 +1,7 @@
 import { useState } from "react";
 import firstpage from '../assets/firstpage.png'
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API = import.meta.env.VITE_API_URL;
 

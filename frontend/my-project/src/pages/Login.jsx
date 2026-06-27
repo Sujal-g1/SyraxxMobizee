@@ -2,7 +2,6 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase.js";
 import { useState } from "react";
 import firstpage from "../assets/firstpage.png";
-import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
